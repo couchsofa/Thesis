@@ -1,18 +1,96 @@
-\documentclass[12pt]{report}
+% Gobals
+\newcommand{\GetAuthor}{Arne Rick}
+\newcommand{\GetTitle}{Implementation of a Planar Strut Network Solver in Python}
+
+% Layout
+\documentclass[12pt, twoside]{report}
+\usepackage[a4paper,width=150mm,top=25mm,bottom=25mm,bindingoffset=6mm,headheight=15pt]{geometry}
 \usepackage[utf8]{inputenc}
+
 \usepackage{graphicx}
 \graphicspath{ {images/} }
 
-\title{
-	{Implementation of a planar strut network solver in python}\\
-	{\large HS Karlsruhe}\\
-	{\includegraphics{hska_logo.pdf}}
-}
-\author{Arne Rick}
-\date{19th July 2017}
+\usepackage{listings}
+\usepackage{solarized-light}
 
+% Header and footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\fancyhead{}
+\fancyhead[CO,LE]{\GetTitle{}}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\thepage}
+\fancyfoot[LO,CE]{Chapter \thechapter}
+\fancyfoot[CO,RE]{\GetAuthor{}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% References
+\usepackage[style=alphabetic]{biblatex}
+\addbibresource{references.bib}
+
+% Title
+\title{
+	{\GetTitle{}}\\
+	{\includegraphics{hska_logo.png}}
+}
+\author{\GetAuthor{}}
+\date{\today{}, Karlsruhe}
+
+%	Citation
+%
+%	Education is what remains after one has forgotten what one has learned in school.
+%	\parencite[e.g.][page 300]{EIN01}
+%
+%	Listing
+%
+%	\begin{lstlisting}[language=python]
+%	def typeConv(_dict, _typeTemplate):
+%		_typeTemplate = dict(_typeTemplate)
+%		for key, value in _dict.iteritems():
+%			try:
+%				_dict[key] = _typeTemplate[key](value)
+%			except ValueError:
+%				print('The ' + key + ' value is not of type ' + str(_typeTemplate[key]) + '.')
+%				exit()
+%	
+%		return _dict
+%	
+%	\end{lstlisting}
+%
+
+% Document
 \begin{document}
 
-Test
+\maketitle
+\setcounter{page}{1}
+
+\chapter*{Abstract}
+Abstract goes here
+
+\chapter*{Dedication}
+To mum and dad
+
+\chapter*{Acknowledgements}
+I want to thank...
+
+
+\tableofcontents
+
+\chapter{Chapter 1 Title}
+\input{chapters/section1}
+
+\chapter{Chapter 2 Title}
+\input{chapters/section2}
+
+
+
+
+\appendix
+\chapter{Appendix Title}
+\input{chapters/appendix}
+
+\printbibliography
 
 \end{document}
