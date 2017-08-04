@@ -1,9 +1,69 @@
-\section{Section 1 Title}
-\label{sec:section1}
+\section{Dependencies}
+\label{sec:depend}
 
-test1
+Python has a well developed ecosystem of modules and packages to perform advanced tasks.
+The modules listed below are used in this implementation.
+ 
+\textit{optparse} [\url{https://docs.python.org/2/library/optparse.html}] \linebreak
+The Python option parser \textit{optparse} is used to parse and set defaults for commandline options.
 
-\subsection{Section 1.1 Title}
-\label{sec:section1.1}
+\textit{scipy} [\url{https://www.scipy.org/}]\linebreak
+\textit{Scipy} is a widely used Python package for scientific computation. The linear algebra submodule \textit{linalg} is used in particular to implement the solver \ref{sec:solver} routine that solves the system of linear equations descirbing the system.
 
-test1.1
+\textit{numpy} [\url{https://www.numpy.org/}]\linebreak
+\textit{Numpy} is part of the \textit{scipy} package. Apart from the powerful N-dimensional array object used to implement the matrices several trigonometric functions were used because they are often faster, more stable than the Python math functions and can perform element-wise operations.
+
+\textit{matplotlib} [\url{https://matplotlib.org/}]\linebreak
+\textit{Matplotlib} is powerful Python plotting library. It is used to visualize the system geometry, load vectors, stress resultants and an approximated deflection plot using B\'{e}zier curves.
+
+\textit{csv} [\url{https://docs.python.org/2/library/csv.html}]\linebreak
+The \textit{csv} module implements classes to read and write so-called CSV (Comma Separated Values) format spreadsheets used for human readable as well as computer generatable input of system geometry, load vectors, material and profile values, and constraints.
+It is also used to store the results (displacement vectors and resultant stresses) of the computation.
+
+
+\section{Source Code Files}
+\label{sec:srcfiles}
+
+
+
+\section{Option Parsing}
+\label{sec:optparse}
+
+
+\section{Input Parsing}
+\label{sec:inputpars}
+
+\subsection{CSV Parser}
+\label{sec:csvparse}
+
+\subsection{Input Checking}
+\label{sec:inputcheck}
+
+
+\section{Assembling Matrices and Vectors}
+\label{sec:asmmatrvec}
+
+\subsection{Global Strut End Force Vector $S\textsubscript{G}$}
+\label{sec:asmSG}
+
+\subsection{System Stiffness Matrix $K$}
+\label{sec:asmK}
+
+\subsection{Applying Constraints}
+\label{sec:applyconst}
+
+
+\section{Checking for Kinematic System Conditions}
+\label{sec:kinesyscheck}
+
+
+\section{Solving the Resulting System of Linear Equations}
+\label{sec:solver}
+
+
+
+
+\begin{equation} \label{constA}
+\frac{(\epsilon * (sin(\epsilon) - \epsilon * cos(\epsilon)))}
+{(2 * (1 - cos(\epsilon)) - (\epsilon * sin(\epsilon)))}
+\end{equation}
