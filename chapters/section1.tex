@@ -20,11 +20,198 @@ The Python option parser \textit{optparse} is used to parse and set defaults for
 The \textit{csv} module implements classes to read and write so-called CSV (Comma Separated Values) format spreadsheets used for human readable as well as computer generatable input of system geometry, load vectors, material and profile values, and constraints.
 It is also used to store the results (displacement vectors and resultant stresses) of the computation.
 
+\pagebreak
 
 \section{Source Code Files}
 \label{sec:srcfiles}
 
+The program is split into multiple modules containing different functions described later in this chapter.
 
+\subsection{main.py}
+\label{subsec:main.py}
+
+The main module calls the functions from the different modules and first perfoms the option parsing.
+
+
+\begin{lstlisting}[basicstyle=\small,language=python]
+...
+def main():
+
+    parser = OptionParser(usage="usage: %prog [options]",
+                          version="%prog " + str(version))
+
+    # Input Files                                       
+
+    group = OptionGroup(parser, "Input files")
+
+    group.add_option("-N", "--NodeFile",
+                     type="string",
+                     action="store",
+                     dest="nodeFile",
+                     default='Input_nodes.csv',
+                     help="CSV file with node definitions")
+...
+\end{lstlisting}
+
+After parsing the command line options the CSV input files for node, strut, constraint and load definitions are loaded respectively.
+Nodes not referenced by any strut (free nodes) are deleted.
+
+\begin{lstlisting}[basicstyle=\small,language=python]
+...
+    nodes       = readCSV(options.nodeFile,
+                          nodesTypeTemplate)
+
+    struts      = readCSV(options.strutFile,
+                          strutsTypeTemplate)
+
+    deleteFreeNodes(nodes, struts)
+
+    constraints = readCSV(options.constFile,
+                          constraintTypeTemplate)
+
+    strutLoads  = readCSV(options.strutLoadFile,
+                          strutLoadTypeTemplate)
+
+    nodeLoads   = readCSV(options.nodeLoadFile,
+                          nodeLoadTypeTemplate)
+...
+\end{lstlisting}
+
+\pagebreak
+
+To validate the references several checks are performed on the data.
+
+\begin{lstlisting}[basicstyle=\small,language=python]
+...
+    checkStrutNodes(nodes, struts)
+    checkConstraintNodes(nodes, constraints)
+    checkStrutLoads(struts, strutLoads)
+    checkNodeLoads(nodes, nodeLoads)
+...
+\end{lstlisting}
+
+Properties that can be derived from the inputs (length, angle, type and local member force vector $S\textsubscript{L}$ resulting from the strut loads) and are needed for later computations are calculated and stored in the strut objects.
+
+\begin{lstlisting}[basicstyle=\small,language=python]
+...
+    getStrutLength(nodes, struts)
+    getStrutAngle(nodes, struts)
+    getStrutType(struts)
+    assemble_S_L(strutLoads, struts, nodes)
+...
+\end{lstlisting}
+
+The global force vector $S\textsubscript{G}$ is then calculated from node loads and strut loads.
+
+\begin{lstlisting}[basicstyle=\small,language=python]
+...
+    S_G = assemble_S_G(nodeLoads, struts, nodes)
+...
+\end{lstlisting}
+
+The system stiffness matrix $K$ is then assembled from the stiffness matrices $K\textsubscript{i}$ of the the individual struts and constraints are applied.
+
+\begin{lstlisting}[basicstyle=\small,language=python]
+...
+    K = assemble_global_K_I(nodes, struts)
+    apply_constraints(K, struts, nodes, constraints)
+...
+\end{lstlisting}
+
+Now checks can be performed if the system is kinematic. The two criteria used here are:
+\begin{itemize}
+
+  \item Underdefined system (not enough constraints)
+
+\begin{equation}
+n < 3
+\end{equation}
+
+  \item The system stiffness matrix has a non-trivial solution
+
+\begin{equation}
+det K = 0
+\end{equation}
+
+\end{itemize}
+
+\begin{lstlisting}[basicstyle=\small,language=python]
+...
+    if sp.det(K) == 0:
+        print('System is kinematic (det(K)=0)!')
+        exit()
+
+    if countConst(constraints) < 3:
+        print('System is kinematic (n < 3)!')
+        exit()
+...
+\end{lstlisting}
+
+If these checks are passed the solver can be called to calculate the displacement vector $d$.
+After obtaining $d$ the resulting local member forces $S\textsubscript{l}$ can be calculated and stored in the corresponding strut objects.
+
+\begin{lstlisting}[basicstyle=\small,language=python]
+...
+    d = solver(K, S_G, constraints, nodes)
+    calc_local_forces(nodes, struts, d)
+...
+\end{lstlisting}
+
+Now that the analysis is complete the output can be written to a CSV file and a function called to visualize the system geometry, loads, displacement, deflection and stress resultants.
+
+\begin{lstlisting}[basicstyle=\small,language=python]
+...
+    writeDisplacements(options.displacementVectorFile,
+                       d,
+                       nodes)
+    drawSystem(nodes,
+               struts,
+               constraints,
+               strutLoads,
+               nodeLoads,
+               d,
+               float(options.scale),
+               options.savePlot)
+...
+\end{lstlisting}
+
+
+
+
+\subsection{util.py}
+\label{subsec:util.py}
+
+
+
+\subsection{input\_templates.py}
+\label{subsec:inputtemplates.py}
+
+
+\subsection{input.py}
+\label{subsec:input.py}
+
+
+\subsection{output.py}
+\label{subsec:output.py}
+
+
+\subsection{solver.py}
+\label{subsec:solver.py}
+
+
+\subsection{load\_vectors.py}
+\label{subsec:loadvectors.py}
+
+
+\subsection{matrices.py}
+\label{subsec:matrices.py}
+
+
+\subsection{graphics.py}
+\label{subsec:graphics.py}
+
+
+\pagebreak
 
 \section{Option Parsing}
 \label{sec:optparse}
@@ -43,7 +230,7 @@ It is also used to store the results (displacement vectors and resultant stresse
 \section{Assembling Matrices and Vectors}
 \label{sec:asmmatrvec}
 
-\subsection{Global Strut End Force Vector $S\textsubscript{G}$}
+\subsection{Global Member Force Vector $S\textsubscript{G}$}
 \label{sec:asmSG}
 
 \subsection{System Stiffness Matrix $K$}
