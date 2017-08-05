@@ -3,7 +3,7 @@
 \newcommand{\GetTitle}{Implementation of a Planar Strut Network Solver in Python}
 
 % Layout
-\documentclass[12pt, twoside]{report}
+\documentclass[12pt, oneside]{report}
 \usepackage[a4paper,width=150mm,top=25mm,bottom=25mm,bindingoffset=6mm,headheight=15pt]{geometry}
 \usepackage[utf8]{inputenc}
 
@@ -12,6 +12,23 @@
 
 \usepackage{listings}
 \usepackage{solarized-light}
+\usepackage{xcolor-solarized}
+
+\lstset{%basicstyle=\fontfamily{pcr}\selectfont,
+		numbers=left,
+		numbersep=0.5em,
+		numberstyle=\normalfont\footnotesize\color{solarized-violet},
+		frame=l,
+		framesep=2em,
+		framerule=1pt,
+		fillcolor=\color{solarized-base2}, 
+	    rulecolor=\color{solarized-base2},
+	    rulesepcolor=\color{solarized-base2}}
+
+\newenvironment{inconsolata}
+	{\fontfamily{fi4}\footnotesize\selectfont}
+	{\par}
+
 
 \usepackage{amsmath}
 
@@ -37,6 +54,7 @@
 \renewcommand{\footrulewidth}{0.4pt}
 
 % References
+\usepackage{hyperref}
 \usepackage[style=alphabetic]{biblatex}
 \addbibresource{references.bib}
 
@@ -73,6 +91,7 @@
 % Document
 \begin{document}
 
+
 \maketitle
 \setcounter{page}{1}
 
@@ -87,6 +106,7 @@ I want to thank...
 
 
 \tableofcontents
+
 
 \chapter{Program Structure}
 \input{chapters/section1}
