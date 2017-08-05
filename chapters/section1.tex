@@ -3,18 +3,23 @@
 
 Python has a well developed ecosystem of modules and packages to perform advanced tasks.
 The modules listed below are used in this implementation.
+\bigskip
  
 \textit{optparse} [\url{https://docs.python.org/2/library/optparse.html}] \linebreak
 The Python option parser \textit{optparse} is used to parse and set defaults for commandline options.
+\bigskip
 
 \textit{scipy} [\url{https://www.scipy.org/}]\linebreak
 \textit{Scipy} is a widely used Python package for scientific computation. The linear algebra submodule \textit{linalg} is used in particular to implement the solver \ref{sec:solver} routine that solves the system of linear equations descirbing the system.
+\bigskip
 
 \textit{numpy} [\url{https://www.numpy.org/}]\linebreak
-\textit{Numpy} is part of the \textit{scipy} package. Apart from the powerful N-dimensional array object used to implement the matrices several trigonometric functions were used because they are often faster, more stable than the Python math functions and can perform element-wise operations.
+\textit{Numpy} is part of the \textit{scipy} package. Apart from the powerful N-dimensional array object used to implement the matrices and vectors several trigonometric functions were used because they are often faster, more stable than the Python math functions and can perform element-wise operations.
+\bigskip
 
 \textit{matplotlib} [\url{https://matplotlib.org/}]\linebreak
-\textit{Matplotlib} is powerful Python plotting library. It is used to visualize the system geometry, load vectors, stress resultants and an approximated deflection plot using B\'{e}zier curves.
+\textit{Matplotlib} is a powerful Python plotting library. It is used to visualize the system geometry, load vectors, stress resultants and an approximated deflection plot using B\'{e}zier curves.
+\bigskip
 
 \textit{csv} [\url{https://docs.python.org/2/library/csv.html}]\linebreak
 The \textit{csv} module implements classes to read and write so-called CSV (Comma Separated Values) format spreadsheets used for human readable as well as computer generatable input of system geometry, load vectors, material and profile values, and constraints.
@@ -32,8 +37,8 @@ The program is split into multiple modules containing different functions descri
 
 The main module calls the functions from the different modules and first perfoms the option parsing.
 
-
-\begin{lstlisting}[basicstyle=\small,language=python]
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
 ...
 def main():
 
@@ -52,11 +57,13 @@ def main():
                      help="CSV file with node definitions")
 ...
 \end{lstlisting}
+\end{inconsolata}
 
 After parsing the command line options the CSV input files for node, strut, constraint and load definitions are loaded respectively.
 Nodes not referenced by any strut (free nodes) are deleted.
 
-\begin{lstlisting}[basicstyle=\small,language=python]
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
 ...
     nodes       = readCSV(options.nodeFile,
                           nodesTypeTemplate)
@@ -76,12 +83,14 @@ Nodes not referenced by any strut (free nodes) are deleted.
                           nodeLoadTypeTemplate)
 ...
 \end{lstlisting}
+\end{inconsolata}
 
 \pagebreak
 
 To validate the references several checks are performed on the data.
 
-\begin{lstlisting}[basicstyle=\small,language=python]
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
 ...
     checkStrutNodes(nodes, struts)
     checkConstraintNodes(nodes, constraints)
@@ -89,10 +98,12 @@ To validate the references several checks are performed on the data.
     checkNodeLoads(nodes, nodeLoads)
 ...
 \end{lstlisting}
+\end{inconsolata}
 
 Properties that can be derived from the inputs (length, angle, type and local member force vector $S\textsubscript{L}$ resulting from the strut loads) and are needed for later computations are calculated and stored in the strut objects.
 
-\begin{lstlisting}[basicstyle=\small,language=python]
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
 ...
     getStrutLength(nodes, struts)
     getStrutAngle(nodes, struts)
@@ -100,23 +111,28 @@ Properties that can be derived from the inputs (length, angle, type and local me
     assemble_S_L(strutLoads, struts, nodes)
 ...
 \end{lstlisting}
+\end{inconsolata}
 
 The global force vector $S\textsubscript{G}$ is then calculated from node loads and strut loads.
 
-\begin{lstlisting}[basicstyle=\small,language=python]
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
 ...
     S_G = assemble_S_G(nodeLoads, struts, nodes)
 ...
 \end{lstlisting}
+\end{inconsolata}
 
 The system stiffness matrix $K$ is then assembled from the stiffness matrices $K\textsubscript{i}$ of the the individual struts and constraints are applied.
 
-\begin{lstlisting}[basicstyle=\small,language=python]
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
 ...
     K = assemble_global_K_I(nodes, struts)
     apply_constraints(K, struts, nodes, constraints)
 ...
 \end{lstlisting}
+\end{inconsolata}
 
 Now checks can be performed if the system is kinematic. The two criteria used here are:
 \begin{itemize}
@@ -135,7 +151,8 @@ det K = 0
 
 \end{itemize}
 
-\begin{lstlisting}[basicstyle=\small,language=python]
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
 ...
     if sp.det(K) == 0:
         print('System is kinematic (det(K)=0)!')
@@ -146,20 +163,24 @@ det K = 0
         exit()
 ...
 \end{lstlisting}
+\end{inconsolata}
 
 If these checks are passed the solver can be called to calculate the displacement vector $d$.
 After obtaining $d$ the resulting local member forces $S\textsubscript{l}$ can be calculated and stored in the corresponding strut objects.
 
-\begin{lstlisting}[basicstyle=\small,language=python]
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
 ...
     d = solver(K, S_G, constraints, nodes)
     calc_local_forces(nodes, struts, d)
 ...
 \end{lstlisting}
+\end{inconsolata}
 
 Now that the analysis is complete the output can be written to a CSV file and a function called to visualize the system geometry, loads, displacement, deflection and stress resultants.
 
-\begin{lstlisting}[basicstyle=\small,language=python]
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
 ...
     writeDisplacements(options.displacementVectorFile,
                        d,
@@ -174,30 +195,100 @@ Now that the analysis is complete the output can be written to a CSV file and a 
                options.savePlot)
 ...
 \end{lstlisting}
-
-
+\end{inconsolata}
 
 
 \subsection{util.py}
 \label{subsec:util.py}
 
-
+The utility module contains small helper functions used in all other modules.
+These mostly deal with traversing Python's data structures relating names and ids of strut and node objects but also formatting matrices and object properties for debugging output.
 
 \subsection{input\_templates.py}
 \label{subsec:inputtemplates.py}
 
+In order to generate parsers for the CSV input files a template is needed which contains attribute names and type information.
+
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
+...
+strutsTypeTemplate      = [ ('ID' , str),
+                            ('StartNode' , str),
+                            ('StartHinge' , int),
+                            ('EndNode' , str),
+                            ('EndHinge' , int),
+                            ('E' , float),
+                            ('A' , float),
+                            ('I' , float)]
+...
+\end{lstlisting}
+\end{inconsolata}
 
 \subsection{input.py}
 \label{subsec:input.py}
 
+\textit{input.py} contains the parser generators and type conversion functions used to convert the \textit{string} values from the CSV files to the desired types specified in the corresponding templates.
+If conversion fails an error is thrown, telling the user where the malformed input is located.
+The functions used to perform checks on the input and derive data used for further computation are also located in this module.
+
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
+...
+def typeConv(_dict, _typeTemplate):...
+def readCSV(csvFile, typeTemplate):...
+def genTemplate(filename, typeTemplate):...
+def checkStrutNodes(nodes, struts):...
+def checkConstraintNodes(nodes, constraints):...
+def checkStrutLoads(struts, strutLoads):...
+def checkNodeLoads(nodes, nodeLoads):...
+def deleteFreeNodes(nodes, struts):...
+def getStrutLength(nodes, struts):...
+def getStrutAngle(nodes, struts):...
+def getStrutType(struts):...
+def strutLength(strut, nodes):...
+def strutAngle(strut, nodes):...
+def strutType(strut):...
+\end{lstlisting}
+\end{inconsolata}
 
 \subsection{output.py}
 \label{subsec:output.py}
 
+The functions of the \textit{output} module are used to convert and store the results of the analysis in CSV files.
 
 \subsection{solver.py}
 \label{subsec:solver.py}
 
+The \textit{solver} module implements the routine to solve the system of linear equations using methods form the \href{http://www.netlib.org/lapack/}{LAPACK} package contained in \textit{scipy}:
+
+\begin{equation}
+S\textsubscript{G} = K * d
+\end{equation}
+
+After computing the solution the constraints are apllied to the resulting vector $d$.
+
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
+...
+def solver(K, S_G, constraints, nodes):
+    d = sp.solve(K,S_G)
+
+    #apply constraints: set d[i] = 0
+    for ID, const in constraints.iteritems():
+        id = nodeNameToID(const['Node'], nodes)
+        if const['x']:
+            x = id * 3
+            d[x] = 0
+        if const['z']:
+            x = id * 3 + 1
+            d[x] = 0
+        if const['r']:
+            x = id * 3 + 2
+            d[x] = 0
+
+    return d
+\end{lstlisting}
+\end{inconsolata}
 
 \subsection{load\_vectors.py}
 \label{subsec:loadvectors.py}
