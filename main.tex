@@ -19,12 +19,20 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 
-\fancyhead{}
-\fancyhead[CO,LE]{\GetTitle{}}
-\fancyfoot{}
-\fancyfoot[LE,RO]{\thepage}
-\fancyfoot[LO,CE]{Chapter \thechapter}
-\fancyfoot[CO,RE]{\GetAuthor{}}
+\lhead{}
+\chead{\GetTitle{}}
+\rhead{}
+
+\lfoot{Chapter \thechapter}
+\cfoot{\GetAuthor{}}
+\rfoot{\thepage}
+
+%\fancyhead{}
+%\fancyhead[CO,LE]{\GetTitle{}}
+%\fancyfoot{}
+%\fancyfoot[LE,RO]{\thepage}
+%\fancyfoot[LO,CE]{Chapter \thechapter}
+%fancyfoot[CO,RE]{\GetAuthor{}}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0.4pt}
 
