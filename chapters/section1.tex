@@ -293,6 +293,58 @@ def solver(K, S_G, constraints, nodes):
 \subsection{load\_vectors.py}
 \label{subsec:loadvectors.py}
 
+This module encompasses all function definitions to calculate the member forces \note{Add bib ref to Schneider tables} resulting from the different load vectors \ref{fig:loadVec} for each member type \ref{fig:memberTypes}.
+
+
+\begin{figure}[h]%
+    \centering
+    \subfloat[Type 1: trapazoid]{{\includegraphics[width=0.4\textwidth]{load_type_1.png}}}%
+    \qquad
+    \subfloat[Type 2: torque]{{\includegraphics[width=0.4\textwidth]{load_type_2.png}}}%
+
+    \centering
+    \subfloat[Type 3: force]{{\includegraphics[width=0.4\textwidth]{load_type_3.png}}}%
+    
+    \caption{Load Vectors}%
+    \label{fig:loadVec}%
+\end{figure}
+
+
+\begin{figure}[h]%
+    \centering
+    \subfloat[Type 1: both joints rigid]{{\includegraphics[width=0.4\textwidth]{strut_type_1.png}}}%
+    \qquad
+    \subfloat[Type 2a: right: pin-jointed, left: rigid joint]{{\includegraphics[width=0.4\textwidth]{strut_type_2a.png}}}%
+
+    \centering
+    \subfloat[Type 2b: right: rigid joint, left: pin-jointed]{{\includegraphics[width=0.4\textwidth]{strut_type_2b.png}}}%
+    \qquad
+    \subfloat[Type 3: both pin-jointed]{{\includegraphics[width=0.4\textwidth]{strut_type_3.png}}}%
+    
+    \caption{Member Types}%
+    \label{fig:memberTypes}%
+\end{figure}
+
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
+...
+def S_L_1_1( x1, x2, l, F, M, q ):...
+def S_L_1_2a( x1, x2, l, F, M, q ):...
+def S_L_1_2b( x1, x2, l, F, M, q ):...
+def S_L_1_3( x1, x2, l, F, M, q ):...
+
+def S_L_2_1( x1, x2, l, F, M, q ):...
+def S_L_2_2a( x1, x2, l, F, M, q ):...
+def S_L_2_2b( x1, x2, l, F, M, q ):...
+def S_L_2_3( x1, x2, l, F, M, q ):...
+
+def S_L_3_1( x1, x2, l, F, M, q ):...
+def S_L_3_2a( x1, x2, l, F, M, q ):...
+def S_L_3_2b( x1, x2, l, F, M, q ):...
+def S_L_3_3( x1, x2, l, F, M, q ):...
+...
+\end{lstlisting}
+\end{inconsolata}
 
 \subsection{matrices.py}
 \label{subsec:matrices.py}
