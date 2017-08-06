@@ -9,4 +9,4 @@ all: clean
 	chromium ./main.pdf
 
 clean:
-	rm -f *.aux *.log *.toc *.bbl *.run.xml *.bcf *.blg *.tdo *.out *.listing
+	rm -f *.aux *.log *.toc *.bbl *.run.xml *.bcf *.blg *.tdo *.out *.listing *.lof
