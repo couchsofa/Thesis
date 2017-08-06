@@ -14,8 +14,7 @@
 \usepackage{solarized-light}
 \usepackage{xcolor-solarized}
 
-\lstset{%basicstyle=\fontfamily{pcr}\selectfont,
-		numbers=left,
+\lstset{numbers=left,
 		numbersep=0.5em,
 		numberstyle=\normalfont\footnotesize\color{solarized-violet},
 		frame=l,
@@ -78,22 +77,6 @@
 %
 %	Education is what remains after one has forgotten what one has learned in school.
 %	\parencite[e.g.][page 300]{EIN01}
-%
-%	Listing
-%
-%	\begin{lstlisting}[language=python]
-%	def typeConv(_dict, _typeTemplate):
-%		_typeTemplate = dict(_typeTemplate)
-%		for key, value in _dict.iteritems():
-%			try:
-%				_dict[key] = _typeTemplate[key](value)
-%			except ValueError:
-%				print('The ' + key + ' value is not of type ' + str(_typeTemplate[key]) + '.')
-%				exit()
-%	
-%		return _dict
-%	
-%	\end{lstlisting}
 %
 
 % Document
