@@ -388,7 +388,18 @@ def get_S_L( load, strut):
 \end{lstlisting}
 \end{inconsolata}
 
-A function to assemble the global load vector $S\textsubscript{G}$ from the local member forces $S\textsubscript{L}$ by rotating them to global coordinates and the node loads by simply adding them to the vector is also part of the module.
+A function to assemble the global load vector $S\textsubscript{G}$ from the local member forces $S\textsubscript{L}$ by rotating them to global coordinates ($S\textsubscript{G} = S\textsubscript{L} * rot(\alpha)$ \ref{rot}) and the node loads by simply adding them to the vector is also part of the module.
+
+\begin{equation} \label{rot}
+rot = \begin{pmatrix}
+cos(\alpha)  & sin(\alpha)  & 0   & 0             & 0             & 0   \\[0.2em]
+-sin(\alpha) & cos(\alpha)  & 0   & 0             & 0             & 0   \\[0.2em]
+0            & 0            & 1   & 0             & 0             & 0   \\[0.2em]
+0            & 0            & 0   & cos(\alpha)   & sin(\alpha)   & 0   \\[0.2em]
+0            & 0            & 0   & -sin(\alpha)  & cos(\alpha)   & 0   \\[0.2em]
+0            & 0            & 0   & 0             & 0             & 1
+     \end{pmatrix}
+\end{equation}
 
 \begin{inconsolata}
 \begin{lstlisting}[language=python]
@@ -430,7 +441,7 @@ def assemble_S_G( nodeLoads, struts, nodes ):
 \subsection{matrices.py}
 \label{subsec:matrices.py}
 
-
+\textit{matrices} is used to deal with the required matrix operations and to calculate the matrices of the different member types \ref{fig:memberTypes}.
 
 \begin{equation} \label{K1}
 K\textsubscript{1} = \begin{pmatrix}
@@ -476,31 +487,36 @@ K\textsubscript{3} = \begin{pmatrix}
      \end{pmatrix}
 \end{equation}
 
+Stabkennzahl \note{English?!}
+
 \begin{equation} \label{e}
 \epsilon = l\sqrt{\frac{|N|}{EI}}
 \end{equation}
 
+The coeffecients $a, b, c ,d$ are functions in second order theory and model stiffening and weakening due to normal force.
+In first order theory ($N = 0 \Rightarrow \epsilon = 0$) they are treated as constants.
+
 \begin{equation} \label{a}
     a = \begin{cases}
-            4              & \text{if } \epsilon \leq 0\\[1.2em]
-            \dfrac{\epsilon * (sin(\epsilon) - \epsilon * cos(\epsilon))}{2 * (1 - cos(\epsilon)) - (\epsilon * sin(\epsilon))}               & \text{if } N > 0          \\[1.2em]
-            \dfrac{\epsilon * (sinh(\epsilon) - \epsilon * cosh(\epsilon))}{2 * ((cosh(\epsilon) - 1) - \epsilon * sinh(\epsilon))}               & \text{if } N \leq 0
+            \hfil 4              & \text{if } \epsilon \leq 0\\[1.2em]
+            \hfil \dfrac{\epsilon * sin(\epsilon) - \epsilon^2 * cos(\epsilon)}{2 * (1 - cos(\epsilon)) - (\epsilon * sin(\epsilon))}               & \text{if } N < 0          \\[1.2em]
+            -\dfrac{\epsilon * sinh(\epsilon) - \epsilon^2 * cosh(\epsilon)}{2 * (1 - cosh(\epsilon)) + \epsilon * sinh(\epsilon)}               & \text{if } N > 0
         \end{cases}
 \end{equation}
 
 \begin{equation} \label{b}
     b = \begin{cases}
-            2              & \text{if } \epsilon \leq 0\\[1.2em]
-            \dfrac{\epsilon * (\epsilon - sin(\epsilon))}{2*(1 - cos(\epsilon)) - \epsilon * sin(\epsilon) }               & \text{if } N > 0          \\[1.2em]
-            \dfrac{\epsilon * (\epsilon - sinh(\epsilon))}{2*(cosh(\epsilon) - 1) - \epsilon * sinh(\epsilon)}               & \text{if } N \leq 0
+            \hfil 2              & \text{if } \epsilon \leq 0\\[1.2em]
+            \hfil \dfrac{\epsilon^2 - sin(\epsilon)}{2*(1 - cos(\epsilon)) - \epsilon * sin(\epsilon) }               & \text{if } N < 0          \\[1.2em]
+            -\dfrac{\epsilon^2 - \epsilon * sinh(\epsilon))}{2 * (1 - cosh(\epsilon)) + \epsilon * sinh(\epsilon)}               & \text{if } N > 0
         \end{cases}
 \end{equation}
 
 \begin{equation} \label{c}
     c = \begin{cases}
-            3              & \text{if } \epsilon \leq 0\\[1.2em]
-            \dfrac{\epsilon^2 * sin(\epsilon)}{sin(\epsilon) - \epsilon * cos(\epsilon)}               & \text{if } N > 0          \\[1.2em]
-            \dfrac{\epsilon^2 * sinh(\epsilon)}{\epsilon * cosh(\epsilon) - sinh(\epsilon)}               & \text{if } N \leq 0
+            \hfil 3              & \text{if } \epsilon \leq 0\\[1.2em]
+            \hfil \dfrac{\epsilon^2 * sin(\epsilon)}{sin(\epsilon) - \epsilon * cos(\epsilon)}               & \text{if } N < 0          \\[1.2em]
+            -\dfrac{\epsilon^2 * sinh(\epsilon)}{sinh(\epsilon) - \epsilon * cosh(\epsilon)}               & \text{if } N > 0
         \end{cases}
 \end{equation}
 
@@ -508,22 +524,33 @@ K\textsubscript{3} = \begin{pmatrix}
     d = a + b
 \end{equation}
 
-\begin{equation} \label{rot}
-rot = \begin{pmatrix}
-cos(\alpha)  & sin(\alpha)  & 0   & 0             & 0             & 0   \\[0.2em]
--sin(\alpha) & cos(\alpha)  & 0   & 0             & 0             & 0   \\[0.2em]
-0            & 0            & 1   & 0             & 0             & 0   \\[0.2em]
-0            & 0            & 0   & cos(\alpha)   & sin(\alpha)   & 0   \\[0.2em]
-0            & 0            & 0   & -sin(\alpha)  & cos(\alpha)   & 0   \\[0.2em]
-0            & 0            & 0   & 0             & 0             & 1
-     \end{pmatrix}
-\end{equation}
+\begin{figure}[h]%
+    \centering
+    \includegraphics[width=0.9\textwidth]{coeff_N_neg.png}%
+    \caption{Coefficients for negative normal pressure}%
+    \label{fig:coeff_N_neg}%
+\end{figure}
+
+\begin{figure}[h]%
+    \centering
+    \includegraphics[width=0.9\textwidth]{coeff_N_pos.png}%
+    \caption{Coefficients for positive normal pressure}%
+    \label{fig:coeff_N_pos}%
+\end{figure}
 
 \begin{equation} \label{symmetrize}
     M\textsubscript{sym} = M + M^T - diag(M)
 \end{equation}
 
 
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
+...
+def symmetrize(M):
+    return M + M.T - np.diag(M.diagonal())
+...
+\end{lstlisting}
+\end{inconsolata}
 
 
 \subsection{graphics.py}
@@ -564,11 +591,3 @@ cos(\alpha)  & sin(\alpha)  & 0   & 0             & 0             & 0   \\[0.2em
 
 \section{Solving the Resulting System of Linear Equations}
 \label{sec:solver}
-
-
-
-
-\begin{equation} \label{constA}
-\frac{(\epsilon * (sin(\epsilon) - \epsilon * cos(\epsilon)))}
-{(2 * (1 - cos(\epsilon)) - (\epsilon * sin(\epsilon)))}
-\end{equation}
