@@ -109,12 +109,20 @@ I want to thank...
 \chapter{Chapter 2 Title}
 \input{chapters/section2}
 
+\chapter{Prospects}
+\input{chapters/section3}
 
 
 
 \appendix
-\chapter{Appendix Title}
 \input{chapters/appendix}
+
+\chapter{Appendix}
+
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\listfigurename}
+\listoffigures
 
 \printbibliography
 
