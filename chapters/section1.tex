@@ -166,7 +166,7 @@ det K = 0
 \end{inconsolata}
 
 If these checks are passed the solver can be called to calculate the displacement vector $d$.
-After obtaining $d$ the resulting local member forces $S\textsubscript{l}$ can be calculated and stored in the corresponding strut objects.
+After obtaining $d$ the resulting local member forces $S\textsubscript{L}$ can be calculated and stored in the corresponding strut objects.
 
 \begin{inconsolata}
 \begin{lstlisting}[language=python]
@@ -293,7 +293,7 @@ def solver(K, S_G, constraints, nodes):
 \subsection{load\_vectors.py}
 \label{subsec:loadvectors.py}
 
-This module encompasses all function definitions to calculate the member forces \note{Add bib ref to Schneider tables} resulting from the different load vectors \ref{fig:loadVec} for each member type \ref{fig:memberTypes}.
+This module encompasses all function definitions to calculate the local member forces $S\textsubscript{L}$ \note{Add bib ref to Schneider tables} resulting from the different load vectors \ref{fig:loadVec} for each member type \ref{fig:memberTypes}.
 
 
 \begin{figure}[h]%
@@ -346,8 +346,184 @@ def S_L_3_3( x1, x2, l, F, M, q ):...
 \end{lstlisting}
 \end{inconsolata}
 
+The function references are stored in a \textit{dictionary} and dereferenced by member and load type as keys to simplify the implementation of the \textit{get\_S\_L} function and allow for easy expandability.
+
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
+...
+dict = {
+    1:{
+        '1'  : S_L_1_1,
+        '2a' : S_L_1_2a,
+        '2b' : S_L_1_2b,
+        '3'  : S_L_1_3
+    },
+    2:{
+        '1'  : S_L_2_1,
+        '2a' : S_L_2_2a,
+        '2b' : S_L_2_2b,
+        '3'  : S_L_2_3
+    },
+    3:{
+        '1'  : S_L_3_1,
+        '2a' : S_L_3_2a,
+        '2b' : S_L_3_2b,
+        '3'  : S_L_3_3
+    }
+}
+
+#calculates the load vector from a load
+def get_S_L( load, strut):
+    x1 = load['x1']
+    x2 = load['x2']
+    l  = strut['l']
+    F  = load['F']
+    M  = load['M']
+    q  = load['q']
+    loadType = load['Type']
+    strutType = strut['Type']
+
+    return dict[loadType][strutType](x1, x2, l, F, M, q)
+...
+\end{lstlisting}
+\end{inconsolata}
+
+A function to assemble the global load vector $S\textsubscript{G}$ from the local member forces $S\textsubscript{L}$ by rotating them to global coordinates and the node loads by simply adding them to the vector is also part of the module.
+
+\begin{inconsolata}
+\begin{lstlisting}[language=python]
+...
+#creates the global load vector from strut loads and node loads
+def assemble_S_G( nodeLoads, struts, nodes ):
+    size = len(nodes) * 3
+    S_G = np.zeros(size)
+
+    #add node loads
+    for ID, load in nodeLoads.iteritems():
+        id = nodeNameToID(load['Node'], nodes)
+        Fx = load['Fx']
+        Fz = load['Fz']
+        M  = load['M']
+        v = np.array([Fx, Fz, M])
+        for i in range(3):
+            S_G[id*3 + i] += v[i]
+
+    #add strut load vectors
+    for ID, strut in struts.iteritems():
+        id = nodeNameToID(strut['StartNode'], nodes)
+
+        S_L = np.zeros(6)
+        if 'S_L' in strut:
+            S_L = strut['S_L']
+
+        #rotate to global coordinates
+        alpha = strut['alpha']
+        v = rot(alpha).dot(S_L)
+        for i in range(6):
+            S_G[id*3 + i] += v[i] * -1
+
+    return S_G
+...
+\end{lstlisting}
+\end{inconsolata}
+
 \subsection{matrices.py}
 \label{subsec:matrices.py}
+
+
+
+\begin{equation} \label{K1}
+K\textsubscript{1} = \begin{pmatrix}
+\dfrac{EA}{l} & 0                   & 0                   & -\dfrac{EA}{l}  & 0                   & 0                   \\[0.8em]
+              & 2d\dfrac{EI}{l^3}   & -d\dfrac{EI}{l^2}   & 0               & -2d\dfrac{EI}{l^3}  & -d\dfrac{EI}{l^2}   \\[0.8em]
+              &                     & a\dfrac{EI}{l}      & 0               & d\dfrac{EI}{l^2}    & b\dfrac{EI}{l}      \\[0.8em]
+              &                     &                     & 0               & \dfrac{EA}{l}       & 0                   \\[0.8em]
+              &                     &                     &                 & 0                   & d\dfrac{EI}{l^2}    \\[0.8em]
+              &                     &                     &                 &                     & a\dfrac{EI}{l}
+     \end{pmatrix}
+\end{equation}
+
+\begin{equation} \label{K2a}
+K\textsubscript{2a} = \begin{pmatrix}
+\dfrac{EA}{l} & 0                   & 0                   & -\dfrac{EA}{l}  & 0                   & 0                   \\[0.8em]
+              & c\dfrac{EI}{l}      & -c\dfrac{EI}{l^2}   & 0               & -\dfrac{EI}{l^3}    & 0                   \\[0.8em]
+              &                     & c\dfrac{EI}{l}      & 0               & c\dfrac{EI}{l^2}    & 0                   \\[0.8em]
+              &                     &                     & \dfrac{EA}{l}   & 0                   & 0                   \\[0.8em]
+              &                     &                     &                 & c\dfrac{EI}{l^3}    & 0                   \\[0.8em]
+              &                     &                     &                 &                     & 0
+     \end{pmatrix}
+\end{equation}
+
+\begin{equation} \label{K2b}
+K\textsubscript{2b} = \begin{pmatrix}
+\dfrac{EA}{l} & 0                   & 0                   & -\dfrac{EA}{l}  & 0                   & 0                   \\[0.8em]
+              & \dfrac{EI}{l^3}     & 0                   & 0               & -c\dfrac{EI}{l^3}   & -c\dfrac{EI}{l^2}   \\[0.8em]
+              &                     & 0                   & 0               & 0                   & 0                   \\[0.8em]
+              &                     &                     & \dfrac{EA}{l}   & 0                   & 0                   \\[0.8em]
+              &                     &                     &                 & c\dfrac{EI}{l^3}    & c\dfrac{EI}{l^2}    \\[0.8em]
+              &                     &                     &                 &                     & c\dfrac{EI}{l}
+     \end{pmatrix}
+\end{equation}
+
+\begin{equation} \label{K3}
+K\textsubscript{3} = \begin{pmatrix}
+\dfrac{EA}{l} & 0                   & 0                   & -\dfrac{EA}{l}  & 0                   & 0                   \\[0.8em]
+              & 0                   & 0                   & 0               & 0                   & 0                   \\[0.8em]
+              &                     & 0                   & 0               & 0                   & 0                   \\[0.8em]
+              &                     &                     & \dfrac{EA}{l}   & 0                   & 0                   \\[0.8em]
+              &                     &                     &                 & 0                   & 0                   \\[0.8em]
+              &                     &                     &                 &                     & 0
+     \end{pmatrix}
+\end{equation}
+
+\begin{equation} \label{e}
+\epsilon = l\sqrt{\frac{|N|}{EI}}
+\end{equation}
+
+\begin{equation} \label{a}
+    a = \begin{cases}
+            4              & \text{if } \epsilon \leq 0\\[1.2em]
+            \dfrac{\epsilon * (sin(\epsilon) - \epsilon * cos(\epsilon))}{2 * (1 - cos(\epsilon)) - (\epsilon * sin(\epsilon))}               & \text{if } N > 0          \\[1.2em]
+            \dfrac{\epsilon * (sinh(\epsilon) - \epsilon * cosh(\epsilon))}{2 * ((cosh(\epsilon) - 1) - \epsilon * sinh(\epsilon))}               & \text{if } N \leq 0
+        \end{cases}
+\end{equation}
+
+\begin{equation} \label{b}
+    b = \begin{cases}
+            2              & \text{if } \epsilon \leq 0\\[1.2em]
+            \dfrac{\epsilon * (\epsilon - sin(\epsilon))}{2*(1 - cos(\epsilon)) - \epsilon * sin(\epsilon) }               & \text{if } N > 0          \\[1.2em]
+            \dfrac{\epsilon * (\epsilon - sinh(\epsilon))}{2*(cosh(\epsilon) - 1) - \epsilon * sinh(\epsilon)}               & \text{if } N \leq 0
+        \end{cases}
+\end{equation}
+
+\begin{equation} \label{c}
+    c = \begin{cases}
+            3              & \text{if } \epsilon \leq 0\\[1.2em]
+            \dfrac{\epsilon^2 * sin(\epsilon)}{sin(\epsilon) - \epsilon * cos(\epsilon)}               & \text{if } N > 0          \\[1.2em]
+            \dfrac{\epsilon^2 * sinh(\epsilon)}{\epsilon * cosh(\epsilon) - sinh(\epsilon)}               & \text{if } N \leq 0
+        \end{cases}
+\end{equation}
+
+\begin{equation} \label{d}
+    d = a + b
+\end{equation}
+
+\begin{equation} \label{rot}
+rot = \begin{pmatrix}
+cos(\alpha)  & sin(\alpha)  & 0   & 0             & 0             & 0   \\[0.2em]
+-sin(\alpha) & cos(\alpha)  & 0   & 0             & 0             & 0   \\[0.2em]
+0            & 0            & 1   & 0             & 0             & 0   \\[0.2em]
+0            & 0            & 0   & cos(\alpha)   & sin(\alpha)   & 0   \\[0.2em]
+0            & 0            & 0   & -sin(\alpha)  & cos(\alpha)   & 0   \\[0.2em]
+0            & 0            & 0   & 0             & 0             & 1
+     \end{pmatrix}
+\end{equation}
+
+\begin{equation} \label{symmetrize}
+    M\textsubscript{sym} = M + M^T - diag(M)
+\end{equation}
+
+
 
 
 \subsection{graphics.py}
@@ -375,7 +551,6 @@ def S_L_3_3( x1, x2, l, F, M, q ):...
 
 \subsection{Global Member Force Vector $S\textsubscript{G}$}
 \label{sec:asmSG}
-
 \subsection{System Stiffness Matrix $K$}
 \label{sec:asmK}
 
