@@ -50,22 +50,26 @@ def _D( e, N ):
 
 
 #plot 1
-e = np.arange(0.0, 6.0, 0.01)
+e = np.arange(0.0, 6.5, 0.01)
 N = -1
 A = []
 B = []
 C = []
 D = []
 
-for _e in e:
+for _e in np.arange(0.0, 6.0, 0.01):
 	A.append(_A(_e,N))
+for _e in np.arange(6.0, 6.5, 0.01):
+	A.append(-100)
 
-for _e in e:
+for _e in np.arange(0.0, 6.0, 0.01):
 	B.append(_B(_e,N))
+for _e in np.arange(6.0, 6.5, 0.01):
+	B.append(100)
 
 for _e in np.arange(0.0, 4.45, 0.01):
 	C.append(_C(_e,N))
-for _e in np.arange(4.45, 6.0, 0.01):
+for _e in np.arange(4.45, 6.5, 0.01):
 	C.append(-100)
 
 for _e in e:
@@ -82,6 +86,18 @@ axes.annotate('a', xy=(0.03, 4.1))
 axes.annotate('b', xy=(0.03, 2.1))
 axes.annotate('c', xy=(0.03, 3.1))
 axes.annotate('d', xy=(0.03, 6.1))
+
+plt.plot([np.pi/2, np.pi/2], [-2, 8], linestyle='--', linewidth=1, color='black')
+axes.text(np.pi/2, 7.65, r'Euler I: $\pi$/2', rotation=270)
+
+plt.plot([np.pi, np.pi], [-2, 8], linestyle='--', linewidth=1, color='black')
+axes.text(np.pi, 7.65, r'Euler II: $\pi$', rotation=270)
+
+plt.plot([np.pi*1.431, np.pi*1.431], [-2, 8], linestyle='--', linewidth=1, color='black')
+axes.text(np.pi*1.431, 7.65, r'Euler III: 1.431$\pi$', rotation=270)
+
+plt.plot([np.pi*2, np.pi*2], [-2, 8], linestyle='--', linewidth=1, color='black')
+axes.text(np.pi*2, 7.65, r'Euler IV: 2$\pi$', rotation=270)
 
 axes.set_ylim([-2,8])
 
