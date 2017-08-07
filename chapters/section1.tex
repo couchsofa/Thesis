@@ -27,8 +27,8 @@ It is also used to store the results (displacement vectors and resultant stresse
 
 \pagebreak
 
-\section{Source Code Files}
-\label{sec:srcfiles}
+\section{Modules}
+\label{sec:modules}
 
 The program is split into multiple modules containing different functions described later in this chapter.
 
@@ -490,7 +490,7 @@ K\textsubscript{3} = \begin{pmatrix}
 Stabkennzahl \note{English?!}
 
 \begin{equation} \label{e}
-\epsilon = l\sqrt{\frac{|N|}{EI}}
+\epsilon = l * \sqrt{\frac{|N|}{EI}}
 \end{equation}
 
 The coeffecients $a, b, c ,d$ are functions in second order theory and model stiffening and weakening due to normal force.
@@ -537,6 +537,10 @@ In first order theory ($N = 0 \Rightarrow \epsilon = 0$) they are treated as con
     \caption{Coefficients for positive normal pressure}%
     \label{fig:coeff_N_pos}%
 \end{figure}
+
+Because all matrices are symmetric the lower left is left empty (initiated with $0$). All matrix operations are only applied to the upper right parts to save time.
+Only the \textit{solver} \ref{subsec:solver.py} requires that the entries are mirrored to the lower left. Therefore, when the system stiffness matrix $K$ is assembled it gets symmetrized before calling the \textit{solver} by adding the transposed matrix to itself and subtracting the diagonal.
+This assumes that the lower left contains only zeroes.
 
 \begin{equation} \label{symmetrize}
     M\textsubscript{sym} = M + M^T - diag(M)
