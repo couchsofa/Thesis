@@ -18,8 +18,8 @@ def _A( e, N ):
 						/(2 * (1 - math.cos(e)) - (e * math.sin(e)))
 	# negative normal pressure
 	else:
-		return -1 * (( e * math.sinh( e ) - e**2 * math.cosh( e ) )\
-						/(2 * ( 1- math.cosh(e)) + e * math.sinh(e)))
+		return ( e * math.sinh( e ) - e**2 * math.cosh( e ) )\
+						/(2 * ( math.cosh(e) - 1) - e * math.sinh(e))
 
 def _B( e, N ):
 	if e <= 0:
@@ -30,8 +30,8 @@ def _B( e, N ):
 						/( 2*(1 - math.cos(e)) - e * math.sin(e) )
 	# negative normal pressure
 	else:
-		return -1 * ((e**2 - e * math.sinh(e))\
-						/(2*(1 - math.cosh(e)) + e * math.sinh(e)))
+		return (e**2 - e * math.sinh(e))\
+						/(2*(math.cosh(e) - 1) - e * math.sinh(e))
 
 def _C( e, N ):
 	if e <= 0:
@@ -42,8 +42,8 @@ def _C( e, N ):
 						/(math.sin(e) - e * math.cos(e))
 	# negative normal pressure
 	else:
-		return -1 * ((e**2 * math.sinh(e))\
-						/( math.sinh(e) - e * math.cosh(e)))
+		return (e**2 * math.sinh(e))\
+						/( e * math.cosh(e) - math.sinh(e))
 
 def _D( e, N ):
 	return _A(e, N) + _B(e, N)
@@ -101,7 +101,7 @@ axes.text(np.pi*2, 7.65, r'Euler IV: 2$\pi$', rotation=270)
 
 axes.set_ylim([-2,8])
 
-plt.xlabel(r'$\epsilon$')
+plt.xlabel(r'$\varepsilon$')
 plt.grid(True)
 plt.savefig("/home/couchsofa/Thesis/paper/images/coeff_N_neg.png")
 plt.clf()
@@ -140,6 +140,6 @@ axes.annotate('d', xy=(0.03, 6.1))
 
 axes.set_ylim([0,10])
 
-plt.xlabel(r'$\epsilon$')
+plt.xlabel(r'$\varepsilon$')
 plt.grid(True)
 plt.savefig("/home/couchsofa/Thesis/paper/images/coeff_N_pos.png")
