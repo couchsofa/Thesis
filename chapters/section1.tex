@@ -262,7 +262,7 @@ The functions of the \textit{output} module are used to convert and store the re
 The \textit{solver} module implements the routine to solve the system of linear equations using methods form the \href{http://www.netlib.org/lapack/}{LAPACK} package contained in \textit{scipy}:
 
 \begin{equation}
-S\textsubscript{G} = K * d
+S\textsubscript{G} = K \cdot d
 \end{equation}
 
 After computing the solution the constraints are apllied to the resulting vector $d$.
@@ -388,7 +388,7 @@ def get_S_L( load, strut):
 \end{lstlisting}
 \end{inconsolata}
 
-A function to assemble the global load vector $S\textsubscript{G}$ from the local member forces $S\textsubscript{L}$ by rotating them to global coordinates ($S\textsubscript{G} = S\textsubscript{L} * rot(\alpha)$ \ref{rot}) and the node loads by simply adding them to the vector is also part of the module.
+A function to assemble the global load vector $S\textsubscript{G}$ from the local member forces $S\textsubscript{L}$ by rotating them to global coordinates ($S\textsubscript{G} = S\textsubscript{L} \cdot rot(\alpha)$ \ref{rot}) and the node loads by simply adding them to the vector is also part of the module.
 
 \begin{equation} \label{rot}
 rot = \begin{pmatrix}
@@ -490,7 +490,7 @@ K\textsubscript{3} = \begin{pmatrix}
 Stabkennzahl \note{English?!}
 
 \begin{equation} \label{e}
-\varepsilon = l * \sqrt{\frac{|N|}{EI}}
+\varepsilon = l \cdot \sqrt{\frac{|N|}{EI}}
 \end{equation}
 
 The coeffecients $a, b, c ,d$ are functions in second order theory and model stiffening and weakening due to normal force.
@@ -499,24 +499,24 @@ In first order theory ($N = 0 \Rightarrow \varepsilon = 0$) they are treated as 
 \begin{equation} \label{a}
     a = \begin{cases}
             \hfil 4              & \text{if } \varepsilon \leq 0\\[1.2em]
-            \hfil \dfrac{\varepsilon * sin(\varepsilon) - \varepsilon^2 * cos(\varepsilon)}{2 * (1 - cos(\varepsilon)) - (\varepsilon * sin(\varepsilon))}               & \text{if } N < 0          \\[1.2em]
-            \dfrac{\varepsilon * sinh(\varepsilon) - \varepsilon^2 * cosh(\varepsilon)}{2 * (cosh(\varepsilon) - 1) - \varepsilon * sinh(\varepsilon)}               & \text{if } N > 0
+            \hfil \dfrac{\varepsilon \cdot sin(\varepsilon) - \varepsilon^2 \cdot cos(\varepsilon)}{2 \cdot (1 - cos(\varepsilon)) - (\varepsilon \cdot sin(\varepsilon))}               & \text{if } N < 0          \\[1.2em]
+            \dfrac{\varepsilon \cdot sinh(\varepsilon) - \varepsilon^2 \cdot cosh(\varepsilon)}{2 \cdot (cosh(\varepsilon) - 1) - \varepsilon \cdot sinh(\varepsilon)}               & \text{if } N > 0
         \end{cases}
 \end{equation}
 
 \begin{equation} \label{b}
     b = \begin{cases}
             \hfil 2              & \text{if } \varepsilon \leq 0\\[1.2em]
-            \hfil \dfrac{\varepsilon^2 - \varepsilon * sin(\varepsilon)}{2*(1 - cos(\varepsilon)) - \varepsilon * sin(\varepsilon) }               & \text{if } N < 0          \\[1.2em]
-            \dfrac{\varepsilon^2 - \varepsilon * sinh(\varepsilon))}{2 * (cosh(\varepsilon) - 1) - \varepsilon * sinh(\varepsilon)}               & \text{if } N > 0
+            \hfil \dfrac{\varepsilon^2 - \varepsilon \cdot sin(\varepsilon)}{2\cdot(1 - cos(\varepsilon)) - \varepsilon \cdot sin(\varepsilon) }               & \text{if } N < 0          \\[1.2em]
+            \dfrac{\varepsilon^2 - \varepsilon \cdot sinh(\varepsilon))}{2 \cdot (cosh(\varepsilon) - 1) - \varepsilon \cdot sinh(\varepsilon)}               & \text{if } N > 0
         \end{cases}
 \end{equation}
 
 \begin{equation} \label{c}
     c = \begin{cases}
             \hfil 3              & \text{if } \varepsilon \leq 0\\[1.2em]
-            \hfil \dfrac{\varepsilon^2 * sin(\varepsilon)}{sin(\varepsilon) - \varepsilon * cos(\varepsilon)}               & \text{if } N < 0          \\[1.2em]
-            \dfrac{\varepsilon^2 * sinh(\varepsilon)}{\varepsilon * cosh(\varepsilon) - \varepsilon * sinh(\varepsilon)}               & \text{if } N > 0
+            \hfil \dfrac{\varepsilon^2 \cdot sin(\varepsilon)}{sin(\varepsilon) - \varepsilon \cdot cos(\varepsilon)}               & \text{if } N < 0          \\[1.2em]
+            \dfrac{\varepsilon^2 \cdot sinh(\varepsilon)}{\varepsilon \cdot cosh(\varepsilon) - \varepsilon \cdot sinh(\varepsilon)}               & \text{if } N > 0
         \end{cases}
 \end{equation}
 
