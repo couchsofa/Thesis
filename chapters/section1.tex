@@ -10,7 +10,7 @@ The Python option parser \textit{optparse} is used to parse and set defaults for
 \bigskip
 
 \textit{scipy} [\url{https://www.scipy.org/}]\linebreak
-\textit{Scipy} is a widely used Python package for scientific computation. The linear algebra submodule \textit{linalg} is used in particular to implement the solver \ref{sec:solver} routine that solves the system of linear equations descirbing the system.
+\textit{Scipy} is a widely used Python package for scientific computation. The linear algebra submodule \textit{linalg} is used in particular to implement the solver (\cref{sec:solver}) routine that solves the system of linear equations descirbing the system.
 \bigskip
 
 \textit{numpy} [\url{https://www.numpy.org/}]\linebreak
@@ -61,7 +61,7 @@ def main():
 \end{minipage}
 \end{inconsolata}
 
-After parsing the command line options the CSV input files for node, strut, constraint and load definitions are loaded respectively.
+After parsing the command-line options the CSV input files for node, strut, constraint and load definitions are loaded respectively.
 Nodes not referenced by any strut (free nodes) are deleted.
 
 \begin{inconsolata}
@@ -317,7 +317,7 @@ def solver(K, S_G, constraints, nodes):
 \subsection{load\_vectors.py}
 \label{subsec:loadvectors.py}
 
-This module encompasses all function definitions to calculate the local member forces $S\textsubscript{L}$ \note{Add bib ref to Schneider tables} resulting from the different load vectors \ref{fig:loadVec} for each member type \ref{fig:memberTypes}.
+This module encompasses all function definitions to calculate the local member forces $S\textsubscript{L}$ \note{Add bib ref to Schneider tables} resulting from the different load vectors (\cref{fig:loadVec}) for each member type (\cref{fig:memberTypes}).
 
 
 \begin{figure}[h]%
@@ -416,7 +416,7 @@ def get_S_L( load, strut):
 \end{minipage}
 \end{inconsolata}
 
-A function to assemble the global load vector $S\textsubscript{G}$ from the local member forces $S\textsubscript{L}$ by rotating them to global coordinates ($S\textsubscript{G} = S\textsubscript{L} \cdot rot(\alpha)$ \ref{rot}) and the node loads by simply adding them to the vector is also part of the module.
+A function to assemble the global load vector $S\textsubscript{G}$ from the local member forces $S\textsubscript{L}$ by rotating them to global coordinates ($S\textsubscript{G} = S\textsubscript{L} \cdot rot(\alpha)$ (\cref{rot})) and the node loads by simply adding them to the vector is also part of the module.
 
 \begin{equation} \label{rot}
 rot = \begin{pmatrix}
@@ -471,7 +471,7 @@ def assemble_S_G( nodeLoads, struts, nodes ):
 \subsection{matrices.py}
 \label{subsec:matrices.py}
 
-\textit{matrices} is used to deal with the required matrix operations and to calculate the matrices of the different member types \ref{fig:memberTypes}.
+\textit{matrices} is used to deal with the required matrix operations and to calculate the matrices of the different member types (\cref{fig:memberTypes}).
 
 \begin{equation} \label{K1}
 K\textsubscript{1} = \begin{pmatrix}
@@ -569,11 +569,11 @@ In first order theory ($N = 0 \Rightarrow \varepsilon = 0$) they are treated as 
 \end{figure}
 
 Because all matrices are symmetric the lower left is left empty (initiated with $0$). All matrix operations are only applied to the upper right parts to save time.
-Only the \textit{solver} \ref{subsec:solver.py} requires that the entries are mirrored to the lower left. Therefore, when the system stiffness matrix $K$ is assembled it gets symmetrized before calling the \textit{solver} by adding the transposed matrix to itself and subtracting the diagonal.
+Only the \textit{solver} (\cref{subsec:solver.py}) requires that the entries are mirrored to the lower left. Therefore, when the system stiffness matrix $K$ is assembled it gets symmetrized before calling the \textit{solver} by adding the transposed matrix to itself and subtracting the diagonal.
 This assumes that the lower left contains only zeroes.
 
 \begin{equation} \label{symmetrize}
-    M\textsubscript{sym} = M + M^T - diag(M)
+    M\textsubscript{sym} = M + M^\top - diag(M)
 \end{equation}
 
 
@@ -592,38 +592,67 @@ def symmetrize(M):
 \subsection{graphics.py}
 \label{subsec:graphics.py}
 
+The \textit{graphics} module is used to visualize the system geomatry, load vectors, stress resultants and to generate an approximated deflection plot.
+The plots can be displayed directly and execution is blocked or saved to a .png or .pdf file.
+
+\note{Update when drawSystem shows resultants}
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def drawSystem(nodes, struts, constraints,
+               strutLoads, nodeLoads,
+               d,
+               size,
+               savePlot):
+    
+    _min, _max, mid = getBounds(nodes)
+    fig, ax = plt.subplots() 
+
+    # Nodes
+    drawNodes(nodes, size, ax)
+
+    # Constraints
+    drawConstraints(constraints, nodes, mid, size, ax)
+
+    # Struts
+    drawStruts(struts, nodes, size, ax)
+    
+    ##########################################################
+
+    # Displaced nodes
+    drawDisplacedNodes(d, nodes, size, ax)
+
+    # Displaced struts
+    drawDisplacedStruts(struts, nodes, size, ax)
+
+    ##########################################################
+
+    # loads
+    drawStrutLoads(strutLoads, size, struts, nodes, ax)
+    drawNodeLoads(nodeLoads, size, struts, nodes, ax)
+
+    ###########################################################
+
+    # Extend plot for margin
+...
+    
+    # Label
+    plt.title("System")
+    
+    # Same scale on both axes
+    ax.set_aspect('equal')
+
+    if savePlot != False:
+        # saves plot in file
+        plt.savefig(savePlot, bbox_inches='tight')
+    else:
+        # shows the plot
+        plt.show()
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
 
 \pagebreak
 
-\section{Option Parsing}
-\label{sec:optparse}
-
-
-\section{Input Parsing}
-\label{sec:inputpars}
-
-\subsection{CSV Parser}
-\label{sec:csvparse}
-
-\subsection{Input Checking}
-\label{sec:inputcheck}
-
-
-\section{Assembling Matrices and Vectors}
-\label{sec:asmmatrvec}
-
-\subsection{Global Member Force Vector $S\textsubscript{G}$}
-\label{sec:asmSG}
-\subsection{System Stiffness Matrix $K$}
-\label{sec:asmK}
-
-\subsection{Applying Constraints}
-\label{sec:applyconst}
-
-
-\section{Checking for Kinematic System Conditions}
-\label{sec:kinesyscheck}
-
-
-\section{Solving the Resulting System of Linear Equations}
-\label{sec:solver}

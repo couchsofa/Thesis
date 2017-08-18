@@ -25,7 +25,8 @@
 		framerule=1pt,
 		fillcolor=\color{solarized-base2}, 
 	    rulecolor=\color{solarized-base2},
-	    rulesepcolor=\color{solarized-base2}}
+	    rulesepcolor=\color{solarized-base2},
+	    xleftmargin=2em}
 
 \newenvironment{inconsolata}
 	{\fontfamily{fi4}\footnotesize\selectfont}
@@ -37,6 +38,10 @@
 \restylefloat{figure}
 
 \usepackage{amsmath}
+\usepackage{rotating}
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
 
 % Notes
 \usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
@@ -67,6 +72,10 @@
 \usepackage{hyperref}
 \usepackage[style=alphabetic]{biblatex}
 \addbibresource{references.bib}
+
+\usepackage{cleveref}
+\crefname{figure}{figure}{figures}
+\Crefname{figure}{Figure}{Figures}
 
 % Title
 \title{
@@ -109,11 +118,14 @@ I want to thank...
 \chapter{Program Structure}
 \input{chapters/section1}
 
-\chapter{Chapter 2 Title}
+\chapter{IO}
 \input{chapters/section2}
 
-\chapter{Prospects}
+\chapter{Computation}
 \input{chapters/section3}
+
+\chapter{Prospects}
+\input{chapters/section4}
 
 
 

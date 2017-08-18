@@ -1,14 +1,145 @@
-\section{Dynamic Analysis}
-\label{sec:dynAna}
+\section{Assembling Matrices and Vectors}
+\label{sec:asmmatrvec}
 
-test2
+\subsection{Global Member Force Vector $S\textsubscript{G}$}
+\label{sec:asmSG}
+\subsection{System Stiffness Matrix $K$}
+\label{sec:asmK}
 
-\subsection{Mass Matrices}
-\label{sec:section3.1}
+\subsection{Applying Constraints}
+\label{sec:applyconst}
 
-test3.1
 
-\section{Section Title}
-\label{sec:section3.2}
+\section{Checking for Kinematic System Conditions}
+\label{sec:kinesyscheck}
 
-test3
+
+\section{Solving the Resulting System of Linear Equations}
+\label{sec:solver}
+
+With $n$ being the number of nodes:
+
+\begin{equation} \label{system}
+    \begin{pmatrix}
+        F_{1}^x \\
+        F_{1}^y \\
+        M_{1} \\
+        \vdots \\
+        F_{n}^x \\
+        F_{n}^y \\
+        M_{n}
+    \end{pmatrix} = \begin{bmatrix}
+        k_{1,1}  & k_{1,2} & k_{1,3}  & \cdots & k_{1,n-2}   & k_{1,n-1}   & k_{1,n}   \\
+                 & k_{2,2} & k_{2,3}  & \cdots & k_{2,n-2}   & k_{2,n-1}   & k_{2,n}   \\
+                 &         & k_{3,3}  & \cdots & k_{3,n-2}   & k_{3,n-1}   & k_{3,n}   \\
+                 &         &          & \ddots & \vdots      & \vdots      & \vdots    \\
+                 &         &          &        & k_{n-2,n-2} & k_{n-2,n-1} & k_{n-2,n} \\
+                 &         &          &        &             & k_{n-1,n-1} & k_{n-1,n} \\
+        Sym.     &         &          &        &             &             & k_{n,n}   
+    \end{bmatrix} \cdot \begin{pmatrix}
+        d_{1}^x \\
+        d_{1}^y \\
+        d_{1}^r \\
+        \vdots \\
+        d_n^x \\
+        d_n^y \\
+        d_n^r
+    \end{pmatrix}
+\end{equation}
+
+\begin{equation} \label{}
+    K_{\textcolor{solarized-red}{1}} = \begin{bmatrix}
+        k_{1,1}  & k_{1,2} & k_{1,3}  & k_{1,4}   & k_{1,5}   & k_{1,6} \\
+                 & k_{2,2} & k_{2,3}  & k_{2,4}   & k_{2,5}   & k_{2,6} \\
+                 &         & k_{3,3}  & k_{3,4}   & k_{3,5}   & k_{3,6} \\
+                 &         &          & k_{4,4}   & k_{4,5}   & k_{4,6} \\
+                 &         &          &           & k_{5,5}   & k_{5,6} \\
+        Sym.     &         &          &           &           & k_{6,6}   
+    \end{bmatrix}
+\end{equation}
+\begin{equation} \label{}
+    K_{\textcolor{solarized-cyan}{2}} = \begin{bmatrix}
+        k_{1,1}  & k_{1,2} & k_{1,3}  & k_{1,4}   & k_{1,5}   & k_{1,6} \\
+                 & k_{2,2} & k_{2,3}  & k_{2,4}   & k_{2,5}   & k_{2,6} \\
+                 &         & k_{3,3}  & k_{3,4}   & k_{3,5}   & k_{3,6} \\
+                 &         &          & k_{4,4}   & k_{4,5}   & k_{4,6} \\
+                 &         &          &           & k_{5,5}   & k_{5,6} \\
+        Sym.     &         &          &           &           & k_{6,6}   
+    \end{bmatrix}
+\end{equation}
+\begin{equation} \label{}
+    K_{\textcolor{solarized-green}{3}} = \begin{bmatrix}
+        k_{1,1}  & k_{1,2} & k_{1,3}  & k_{1,4}   & k_{1,5}   & k_{1,6} \\
+                 & k_{2,2} & k_{2,3}  & k_{2,4}   & k_{2,5}   & k_{2,6} \\
+                 &         & k_{3,3}  & k_{3,4}   & k_{3,5}   & k_{3,6} \\
+                 &         &          & k_{4,4}   & k_{4,5}   & k_{4,6} \\
+                 &         &          &           & k_{5,5}   & k_{5,6} \\
+        Sym.     &         &          &           &           & k_{6,6}   
+    \end{bmatrix}
+\end{equation}
+
+\newcommand{\cb}[1]{\textcolor{solarized-red}{#1}}
+\newcommand{\cc}[1]{\textcolor{solarized-cyan}{#1}}
+\newcommand{\cg}[1]{\textcolor{solarized-green}{#1}}
+
+\newcommand{\tikzmarkb}[1]{\tikz[overlay,remember picture] \node (#1) {};}
+\newcommand{\DrawBoxb}[2][]{%
+    \tikz[overlay,remember picture]{
+    \draw[solarized-red,#1]
+      ($(left1)+(-0.2em,0.6em)$) rectangle
+      ($(right1)+(0.1em,-0.3em)$);
+    \draw[solarized-cyan,#1]
+      ($(left2)+(-0.2em,0.6em)$) rectangle
+      ($(right2)+(0.1em,-0.3em)$);
+    \draw[solarized-green,#1]
+      ($(left3)+(-0.2em,0.6em)$) rectangle
+      ($(right3)+(0.1em,-0.3em)$);}
+}
+
+\pagebreak
+\begin{sidewaysfigure}
+
+\begin{equation} \label{fullstiffnessmatrix}
+    K = \begin{bmatrix}\begin{smallmatrix}
+\tikzmarkb{left1}k_{\cb{1}(1,1)} & k_{\cb{1}(1,2)} & k_{\cb{1}(1,3)}  & k_{\cb{1}(1,4)}                   & k_{\cb{1}(1,5)}                    & k_{\cb{1}(1,6)}                                     & 0                                 & 0                                 & 0                                 & 0               & 0               & 0 \\
+                                 & k_{\cb{1}(2,2)} & k_{\cb{1}(2,3)}  & k_{\cb{1}(2,4)}                   & k_{\cb{1}(2,5)}                    & k_{\cb{1}(2,6)}                                     & 0                                 & 0                                 & 0                                 & 0               & 0               & 0 \\
+                                 &                 & k_{\cb{1}(3,3)}  & k_{\cb{1}(3,4)}                   & k_{\cb{1}(3,5)}                    & k_{\cb{1}(3,6)}                                     & 0                                 & 0                                 & 0                                 & 0               & 0               & 0 \\
+                                 &                 &                  & \tikzmarkb{left2}k_{\cb{1}(4,4)} + k_{\cc{2}(1,1)} & k_{\cb{1}(4,5)} + k_{\cc{2}(1,2)}  & k_{\cb{1}(4,6)} + k_{\cc{2}(1,3)}                   & k_{\cc{2}(1,4)}                   & k_{\cc{2}(1,5)}                   & k_{\cc{2}(1,6)}                   & 0               & 0               & 0 \\
+                                 &                 &                  &                                   & k_{\cb{1}(5,5)} + k_{\cc{2}(2,2)}  & k_{\cb{1}(5,6)} + k_{\cc{2}(2,3)}                   & k_{\cc{2}(2,4)}                   & k_{\cc{2}(2,5)}                   & k_{\cc{2}(2,6)}                   & 0               & 0               & 0 \\
+                                 &                 &                  &                                   &                                    & k_{\cb{1}(6,6)} + k_{\cc{2}(3,3)}\tikzmarkb{right1} & k_{\cc{2}(3,4)}                   & k_{\cc{2}(3,5)}                   & k_{\cc{2}(3,6)}                   & 0               & 0               & 0 \\
+                                 &                 &                  &                                   &                                    &                                                     & \tikzmarkb{left3}k_{\cc{2}(4,4)} + k_{\cg{3}(1,1)} & k_{\cc{2}(4,5)} + k_{\cg{3}(1,2)} & k_{\cc{2}(4,6)} + k_{\cg{3}(1,3)} & k_{\cg{3}(1,4)} & k_{\cg{3}(1,5)} & k_{\cg{3}(1,6)} \\
+                                 &                 &                  &                                   &                                    &                                                     &                                   & k_{\cc{2}(5,5)} + k_{\cg{3}(2,2)} & k_{\cc{2}(5,6)} + k_{\cg{3}(2,3)} & k_{\cg{3}(2,4)} & k_{\cg{3}(2,5)} & k_{\cg{3}(2,6)} \\
+                                 &                 &                  &                                   &                                    &                                                     &                                   &                                   & k_{\cc{2}(6,6)} + k_{\cg{3}(3,3)}\tikzmarkb{right2} & k_{\cg{3}(3,4)} & k_{\cg{3}(3,5)} & k_{\cg{3}(3,6)} \\
+                                 &                 &                  &                                   &                                    &                                                     &                                   &                                   &                                   & k_{\cg{3}(4,4)} & k_{\cg{3}(4,5)} & k_{\cg{3}(4,6)} \\
+                                 &                 &                  &                                   &                                    &                                                     &                                   &                                   &                                   &                 & k_{\cg{3}(5,5)} & k_{\cg{3}(5,6)} \\
+Sym.                             &                 &                  &                                   &                                    &                                                     &                                   &                                   &                                   &                 &                 & k_{\cg{3}(6,6)}\tikzmarkb{right3}
+    \end{smallmatrix}\end{bmatrix}
+\end{equation}
+\DrawBoxb[thick]
+
+\end{sidewaysfigure}
+\pagebreak
+
+This function performs the operation visualized in (\cref{fullstiffnessmatrix}).
+The indices are computed such that the operations are only performed on the lower left of the matrices.
+It takes a function as an argument \textit{fn} that is applied to two values (the value already present and that of the matrix to be inserted) and the result is inserted into the matrix. 
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def insert( M, K, start_x, start_y, fn ):
+    size_x, size_y = K.shape
+
+    if (start_x + size_x > M.shape[0]) or (start_y + size_y > M.shape[1]):
+        print "Size mismatch inserting K into M at (" + str(start_x) + "," + str(start_y) + ")."
+        exit()
+
+    for y in range(size_y):
+        for x in range(size_x - y):
+            M[start_y + y][start_x + x + y] = fn(M[start_y + y][start_x + x + y], K[y][x + y])
+    return M
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
