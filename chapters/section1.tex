@@ -317,7 +317,7 @@ def solver(K, S_G, constraints, nodes):
 \subsection{load\_vectors.py}
 \label{subsec:loadvectors.py}
 
-This module encompasses all function definitions to calculate the local member forces $S\textsubscript{L}$ \note{Add bib ref to Schneider tables} resulting from the different load vectors (\cref{fig:loadVec}) for each member type (\cref{fig:memberTypes}).
+This module encompasses all function definitions to calculate the local member forces $S\textsubscript{L}$ \cite[4.2-4.11]{schneider} resulting from the different load vectors (\cref{fig:loadVec}) for each member type (\cref{fig:memberTypes}).
 
 
 \begin{figure}[h]%
@@ -472,7 +472,7 @@ def assemble_S_G( nodeLoads, struts, nodes ):
 \label{subsec:matrices.py}
 
 \textit{matrices} is used to deal with the required matrix operations and to calculate the matrices of the different member types (\cref{fig:memberTypes}).
-
+\note{reference matrices}
 \begin{equation} \label{K1}
 K\textsubscript{1} = \begin{pmatrix}
 \dfrac{EA}{l} & 0                   & 0                   & -\dfrac{EA}{l}  & 0                   & 0                   \\[0.8em]
@@ -517,7 +517,7 @@ K\textsubscript{3} = \begin{pmatrix}
      \end{pmatrix}
 \end{equation}
 
-Stabkennzahl \note{English?!}
+The member coeffecient $\varepsilon$ is dependent on the strut length $l$, the normal force $N$ and its flexural rigidity $EI$:
 
 \begin{equation} \label{e}
 \varepsilon = l \cdot \sqrt{\frac{|N|}{EI}}
@@ -525,7 +525,7 @@ Stabkennzahl \note{English?!}
 
 The coeffecients $a, b, c ,d$ are functions in second order theory and model stiffening and weakening due to normal force.
 In first order theory ($N = 0 \Rightarrow \varepsilon = 0$) they are treated as constants.
-
+\note{reference coefficients}
 \begin{equation} \label{a}
     a = \begin{cases}
             \hfil 4              & \text{if } \varepsilon \leq 0\\[1.2em]

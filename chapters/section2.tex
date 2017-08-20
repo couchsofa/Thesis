@@ -1,10 +1,11 @@
 \section{Option Parsing}
 \label{sec:optparse}
 
-Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{sec:depend}). The options are split into four groups:
+Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{sec:depend}). The options are split into four groups.
 
-\begin{itemize}
-\item Input Files
+
+\subsection{Input Files}
+\label{subsec:inputFiles}
 
 -N NODEFILE, --NodeFile=NODEFILE
 
@@ -30,28 +31,6 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 
 \textit{Generate csv input template files}
 
-\item Output Files
-
--D DISPLACEMENTVECTORFILE,\\
---DisplacementVectorFile=DISPLACEMENTVECTORFILE 
-
-\textit{Destination path to save the displacement vector csv file}
-
-\item Graphics
-
--s SCALE, --Scale=SCALE
-
-\textit{Scales plot elements}
-
--P SAVEPLOT, --SavePlot=SAVEPLOT
-
-\textit{Destination path to save the system plot. Supported filetypes: .png, .pdf}
-
-\item Debug
--d, --Debug
-
-\textit{Print debug outputs}
-\end{itemize}
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -112,6 +91,15 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 \end{minipage}
 \end{inconsolata}
 
+\subsection{Output Files}
+\label{subsec:outputFiles}
+
+-D DISPLACEMENTVECTORFILE,\\
+--DisplacementVectorFile=DISPLACEMENTVECTORFILE 
+
+\textit{Destination path to save the displacement vector csv file}
+
+
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=python]
@@ -134,6 +122,19 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 \end{lstlisting}
 \end{minipage}
 \end{inconsolata}
+
+
+\subsection{Graphics}
+\label{subsec:graphics}
+
+-s SCALE, --Scale=SCALE
+
+\textit{Scales plot elements}
+
+-P SAVEPLOT, --SavePlot=SAVEPLOT
+
+\textit{Destination path to save the system plot. Supported filetypes: .png, .pdf}
+
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -165,6 +166,14 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 \end{minipage}
 \end{inconsolata}
 
+\subsection{Debug}
+\label{subsec:debug}
+
+-d, --Debug
+
+\textit{Print debug outputs}
+
+
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=python]
@@ -192,8 +201,215 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 \section{Input Parsing}
 \label{sec:inputpars}
 
+To parse the inputs (strut, node, load and constraint definitions) a set of templates is defined and a function generates a parser from that template.
+The templates contain information about the structure of the CSV file, column names and types of the values.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+nodesTypeTemplate       = [ ('ID' , str),
+                            ('X' , float),
+                            ('Z' , float)]
+
+strutsTypeTemplate      = [ ('ID' , str),
+                            ('StartNode' , str),
+                            ('StartHinge' , int),
+                            ('EndNode' , str),
+                            ('EndHinge' , int),
+                            ('E' , float),
+                            ('A' , float),
+                            ('I' , float)]
+
+constraintTypeTemplate  = [ ('Node' , str),
+                            ('x' , int),
+                            ('z' , int),
+                            ('r' , int)]
+
+strutLoadTypeTemplate   = [ ('Strut' , str),
+                            ('Type' , int),
+                            ('x1' , float),
+                            ('x2' , float),
+                            ('q' , float),
+                            ('F' , float),
+                            ('M' , float)]
+
+nodeLoadTypeTemplate    = [ ('Node' , str),
+                            ('Fx' , float),
+                            ('Fz' , float),
+                            ('M' , float)]
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
 \subsection{CSV Parser}
 \label{sec:csvparse}
 
+The parser reads a CSV file using \textit{Pythons optparse} (\ref{sec:depend}) and checks if each row contains an entry for every column.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def readCSV(csvFile, typeTemplate):
+    ID = 0
+    with open(csvFile) as csvfile:
+        _dict = {}
+        reader = csv.DictReader(csvfile, delimiter = ';')
+
+        for row in reader:
+
+            if len(row) > len(typeTemplate):
+                print('Too many entries in row ' + str(ID + 1) + ': ' + csvFile)
+                exit()
+
+            for key, value in row.iteritems():
+                if value is None:
+                    print('Too few entries in row ' + str(ID + 1) + ': ' + csvFile)
+                    exit()
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
+Then it trys to cast each entry from type \textit{string} to the type specified in the template.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+            row = typeConv(row, typeTemplate)
+            _dict[ID] = row
+            ID += 1
+
+    return _dict
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
+If casting fails the program exits with an error message indicating which input string is malformed.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def typeConv(_dict, _typeTemplate):
+    _typeTemplate = dict(_typeTemplate)
+    for key, value in _dict.iteritems():
+        try:
+            _dict[key] = _typeTemplate[key](value)
+        except ValueError:
+            print('The ' + key + ' value is not of type ' + str(_typeTemplate[key]) + '.')
+            exit()
+
+    return _dict
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
+This method uses \textit{Pythons} casting methods, which are very sensible and relyable \cite[2.4.1-2.4.6]{pythonTypes}. \note{reference, python book einball}
+The \textit{input.py} (\cref{subsec:input.py}) also contains a function to generate CSV template files from the type templates, making it very convenient to change the data structure by changing the type template and calling \textit{python ./structana/main.py -T} to generate a new set of CSV templates.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def genTemplate(filename, typeTemplate):
+    fieldnames = []
+    for key, value in typeTemplate:
+        fieldnames.append(key)
+    with open(filename, 'w') as csvfile:
+        writer = csv.writer(csvfile, delimiter = ';')
+        writer.writerow(fieldnames)
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
 \subsection{Input Checking}
 \label{sec:inputcheck}
+
+After the input is parsed some logical checks are performed.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def checkStrutNodes(nodes, struts):
+    #assemble node IDs form dict
+    NodeIDs = []
+    for ID, node in nodes.iteritems():
+        NodeIDs.append(node['ID'])
+
+    for ID, strut in struts.iteritems():
+        if strut['StartNode'] not in NodeIDs:
+            print('Node ' + str(strut['StartNode']) + ' referenced by strut ' + str(strut['ID']) + ' but not defined.')
+            exit()
+        if strut['EndNode'] not in NodeIDs:
+            print('Node ' + str(strut['EndNode']) + ' referenced by strut ' + str(strut['ID']) + ' but not defined.')
+            exit()
+
+def checkConstraintNodes(nodes, constraints):
+    #assemble node IDs form dict
+    NodeIDs = []
+    for ID, node in nodes.iteritems():
+        NodeIDs.append(node['ID'])
+
+    for ID, const in constraints.iteritems():
+        if const['Node'] not in NodeIDs:
+            print('Node ' + str(const['Node']) + ' referenced by constraint ' + str(ID) + ' but not defined.')
+            exit()
+
+def checkStrutLoads(struts, strutLoads):
+    #assemble strut IDs form dict
+    StrutIDs = []
+    for ID, strut in struts.iteritems():
+        StrutIDs.append(strut['ID'])
+
+    for ID, load in strutLoads.iteritems():
+        if load['Strut'] not in StrutIDs:
+            print('Strut ' + str(load['Strut']) + ' referenced by load ' + str(ID) + ' but not defined.')
+            exit()
+
+def checkNodeLoads(nodes, nodeLoads):
+    #assemble node IDs form dict
+    NodeIDs = []
+    for ID, node in nodes.iteritems():
+        NodeIDs.append(node['ID'])
+
+    for ID, load in nodeLoads.iteritems():
+        if load['Node'] not in NodeIDs:
+            print('Node ' + str(load['Node']) + ' referenced by load ' + str(ID) + ' but not defined.')
+            exit()
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
+After parsing \textit{node} and \textit{strut} definitions nodes which aren't referenced by any struts (free nodes) are deleted. 
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def deleteFreeNodes(nodes, struts):
+    freeNodes = []
+    for ID, node in nodes.iteritems():
+        isFreeNode = True
+        for strutID, strut in struts.iteritems():
+            if (strut['StartNode'] == nodeIDtoName(ID, nodes)) or (strut['EndNode'] == nodeIDtoName(ID, nodes)):
+                isFreeNode = False
+                pass
+        if isFreeNode:
+            print('Node ' + str(nodeIDtoName(ID, nodes)) + ' is a free node and will be deleted.')
+            freeNodes.append(ID)
+
+    for freeNode in freeNodes:
+        del nodes[freeNode]
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
