@@ -43,6 +43,11 @@
 \usepackage{tikz}
 \usetikzlibrary{calc}
 
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+
+\usepackage{scrextend}
+
 % Notes
 \usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
 \newcommand{\note}[1]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red]{#1}}
@@ -130,15 +135,8 @@ I want to thank...
 
 
 \appendix
+%\chapter{Appendix}
 \input{chapters/appendix}
 
-\chapter{Appendix}
-
-\cleardoublepage
-\phantomsection
-\addcontentsline{toc}{chapter}{\listfigurename}
-\listoffigures
-
-\printbibliography
 
 \end{document}

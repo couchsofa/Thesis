@@ -7,6 +7,9 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 \subsection{Input Files}
 \label{subsec:inputFiles}
 
+If the CSV files are not located in the program root directory a path can be specified using the following options.
+
+\begin{addmargin}[2em]{1em}
 -N NODEFILE, --NodeFile=NODEFILE
 
 \textit{CSV file with node definitions}
@@ -26,10 +29,14 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 -F NODELOADFILE, --NodeLoadFile=NODELOADFILE
 
 \textit{CSV file with node load definitions}
+\end{addmargin}
 
+To generate templates with the column names from the type templates (\ref{ubsec:inputtemplates.py}) this option can be set and the program will exit after creating the files in the program root directory.
+\begin{addmargin}[2em]{1em}
 -T 
 
 \textit{Generate csv input template files}
+\end{addmargin}
 
 
 \begin{inconsolata}
@@ -94,11 +101,14 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 \subsection{Output Files}
 \label{subsec:outputFiles}
 
+By default the CSV file containing the displacement vector $d$ will be written to the program root directory. A different path can be set with this option.
+
+\begin{addmargin}[2em]{1em}
 -D DISPLACEMENTVECTORFILE,\\
 --DisplacementVectorFile=DISPLACEMENTVECTORFILE 
 
 \textit{Destination path to save the displacement vector csv file}
-
+\end{addmargin}
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -127,14 +137,21 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 \subsection{Graphics}
 \label{subsec:graphics}
 
+All elements of the visualization are programmatically generated with a scale factor. The default value of $2.0$ works well for most system geometries. However, for larger are smaller systems the scale factor can be adjusted.
+
+\begin{addmargin}[2em]{1em}
 -s SCALE, --Scale=SCALE
 
 \textit{Scales plot elements}
+\end{addmargin}
 
+If the plot should not be displayed but saved as file a path can be set and the program will save the plot and exit instead of blocking.
+
+\begin{addmargin}[2em]{1em}
 -P SAVEPLOT, --SavePlot=SAVEPLOT
 
 \textit{Destination path to save the system plot. Supported filetypes: .png, .pdf}
-
+\end{addmargin}
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -169,10 +186,13 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 \subsection{Debug}
 \label{subsec:debug}
 
+When the debug flag is set all element stiffness matrices and the global stiffness matrix will be printed to \textit{sys.stdout}.
+
+\begin{addmargin}[2em]{1em}
 -d, --Debug
 
 \textit{Print debug outputs}
-
+\end{addmargin}
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -332,63 +352,6 @@ def genTemplate(filename, typeTemplate):
 \subsection{Input Checking}
 \label{sec:inputcheck}
 
-After the input is parsed some logical checks are performed.
-
-\begin{inconsolata}
-\begin{minipage}{\linewidth}
-\begin{lstlisting}[language=python]
-...
-def checkStrutNodes(nodes, struts):
-    #assemble node IDs form dict
-    NodeIDs = []
-    for ID, node in nodes.iteritems():
-        NodeIDs.append(node['ID'])
-
-    for ID, strut in struts.iteritems():
-        if strut['StartNode'] not in NodeIDs:
-            print('Node ' + str(strut['StartNode']) + ' referenced by strut ' + str(strut['ID']) + ' but not defined.')
-            exit()
-        if strut['EndNode'] not in NodeIDs:
-            print('Node ' + str(strut['EndNode']) + ' referenced by strut ' + str(strut['ID']) + ' but not defined.')
-            exit()
-
-def checkConstraintNodes(nodes, constraints):
-    #assemble node IDs form dict
-    NodeIDs = []
-    for ID, node in nodes.iteritems():
-        NodeIDs.append(node['ID'])
-
-    for ID, const in constraints.iteritems():
-        if const['Node'] not in NodeIDs:
-            print('Node ' + str(const['Node']) + ' referenced by constraint ' + str(ID) + ' but not defined.')
-            exit()
-
-def checkStrutLoads(struts, strutLoads):
-    #assemble strut IDs form dict
-    StrutIDs = []
-    for ID, strut in struts.iteritems():
-        StrutIDs.append(strut['ID'])
-
-    for ID, load in strutLoads.iteritems():
-        if load['Strut'] not in StrutIDs:
-            print('Strut ' + str(load['Strut']) + ' referenced by load ' + str(ID) + ' but not defined.')
-            exit()
-
-def checkNodeLoads(nodes, nodeLoads):
-    #assemble node IDs form dict
-    NodeIDs = []
-    for ID, node in nodes.iteritems():
-        NodeIDs.append(node['ID'])
-
-    for ID, load in nodeLoads.iteritems():
-        if load['Node'] not in NodeIDs:
-            print('Node ' + str(load['Node']) + ' referenced by load ' + str(ID) + ' but not defined.')
-            exit()
-...
-\end{lstlisting}
-\end{minipage}
-\end{inconsolata}
-
 After parsing \textit{node} and \textit{strut} definitions nodes which aren't referenced by any struts (free nodes) are deleted. 
 
 \begin{inconsolata}
@@ -413,3 +376,105 @@ def deleteFreeNodes(nodes, struts):
 \end{lstlisting}
 \end{minipage}
 \end{inconsolata}
+
+Then some logical checks are performed.
+
+\subsubsection{Strut Node References}
+\label{sec:inputcheck-checkStrutNodes}
+
+\textit{checkStrutNodes} checks if the nodes referenced by the struts start- and end-node are defined.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def checkStrutNodes(nodes, struts):
+    #assemble node IDs form dict
+    NodeIDs = []
+    for ID, node in nodes.iteritems():
+        NodeIDs.append(node['ID'])
+
+    for ID, strut in struts.iteritems():
+        if strut['StartNode'] not in NodeIDs:
+            print('Node ' + str(strut['StartNode']) + ' referenced by strut ' + str(strut['ID']) + ' but not defined.')
+            exit()
+        if strut['EndNode'] not in NodeIDs:
+            print('Node ' + str(strut['EndNode']) + ' referenced by strut ' + str(strut['ID']) + ' but not defined.')
+            exit()
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
+\subsubsection{Constraint Node References}
+\label{sec:inputcheck-checkConstraintNodes}
+
+\textit{checkConstraintNodes} checks if the nodes referenced by the constraints are defined.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def checkConstraintNodes(nodes, constraints):
+    #assemble node IDs form dict
+    NodeIDs = []
+    for ID, node in nodes.iteritems():
+        NodeIDs.append(node['ID'])
+
+    for ID, const in constraints.iteritems():
+        if const['Node'] not in NodeIDs:
+            print('Node ' + str(const['Node']) + ' referenced by constraint ' + str(ID) + ' but not defined.')
+            exit()
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
+\subsubsection{Strut Load References}
+\label{sec:inputcheck-checkStrutLoads}
+
+\textit{checkStrutLoads} checks if the struts referenced by the strut loads are defined.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def checkStrutLoads(struts, strutLoads):
+    #assemble strut IDs form dict
+    StrutIDs = []
+    for ID, strut in struts.iteritems():
+        StrutIDs.append(strut['ID'])
+
+    for ID, load in strutLoads.iteritems():
+        if load['Strut'] not in StrutIDs:
+            print('Strut ' + str(load['Strut']) + ' referenced by load ' + str(ID) + ' but not defined.')
+            exit()
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
+\subsubsection{Node Load References}
+\label{sec:inputcheck-checkNodeLoads}
+
+\textit{checkNodeLoads} checks if the nodes referenced by the node loads are defined.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def checkNodeLoads(nodes, nodeLoads):
+    #assemble node IDs form dict
+    NodeIDs = []
+    for ID, node in nodes.iteritems():
+        NodeIDs.append(node['ID'])
+
+    for ID, load in nodeLoads.iteritems():
+        if load['Node'] not in NodeIDs:
+            print('Node ' + str(load['Node']) + ' referenced by load ' + str(ID) + ' but not defined.')
+            exit()
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
