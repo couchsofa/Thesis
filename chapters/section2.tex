@@ -9,6 +9,7 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 
 If the CSV files are not located in the program root directory a path can be specified using the following options.
 
+\vspace{2em}
 \begin{addmargin}[2em]{1em}
 -N NODEFILE, --NodeFile=NODEFILE
 
@@ -30,13 +31,16 @@ If the CSV files are not located in the program root directory a path can be spe
 
 \textit{CSV file with node load definitions}
 \end{addmargin}
+\vspace{2em}
 
 To generate templates with the column names from the type templates (\ref{ubsec:inputtemplates.py}) this option can be set and the program will exit after creating the files in the program root directory.
+\vspace{2em}
 \begin{addmargin}[2em]{1em}
 -T 
 
 \textit{Generate csv input template files}
 \end{addmargin}
+\vspace{2em}
 
 
 \begin{inconsolata}
@@ -103,12 +107,14 @@ To generate templates with the column names from the type templates (\ref{ubsec:
 
 By default the CSV file containing the displacement vector $d$ will be written to the program root directory. A different path can be set with this option.
 
+\vspace{2em}
 \begin{addmargin}[2em]{1em}
 -D DISPLACEMENTVECTORFILE,\\
 --DisplacementVectorFile=DISPLACEMENTVECTORFILE 
 
 \textit{Destination path to save the displacement vector csv file}
 \end{addmargin}
+\vspace{2em}
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -139,19 +145,23 @@ By default the CSV file containing the displacement vector $d$ will be written t
 
 All elements of the visualization are programmatically generated with a scale factor. The default value of $2.0$ works well for most system geometries. However, for larger are smaller systems the scale factor can be adjusted.
 
+\vspace{2em}
 \begin{addmargin}[2em]{1em}
 -s SCALE, --Scale=SCALE
 
 \textit{Scales plot elements}
 \end{addmargin}
+\vspace{2em}
 
 If the plot should not be displayed but saved as file a path can be set and the program will save the plot and exit instead of blocking.
 
+\vspace{2em}
 \begin{addmargin}[2em]{1em}
 -P SAVEPLOT, --SavePlot=SAVEPLOT
 
 \textit{Destination path to save the system plot. Supported filetypes: .png, .pdf}
 \end{addmargin}
+\vspace{2em}
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -188,11 +198,13 @@ If the plot should not be displayed but saved as file a path can be set and the 
 
 When the debug flag is set all element stiffness matrices and the global stiffness matrix will be printed to \textit{sys.stdout}.
 
+\vspace{2em}
 \begin{addmargin}[2em]{1em}
 -d, --Debug
 
 \textit{Print debug outputs}
 \end{addmargin}
+\vspace{2em}
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -330,7 +342,7 @@ def typeConv(_dict, _typeTemplate):
 \end{minipage}
 \end{inconsolata}
 
-This method uses \textit{Pythons} casting methods, which are very sensible and relyable \cite[2.4.1-2.4.6]{pythonTypes}. \note{reference, python book einball}
+This method uses \textit{Pythons} casting methods, which are very sensible and relyable \cite[2.4.1-2.4.6]{pythonTypes}.
 The \textit{input.py} (\cref{subsec:input.py}) also contains a function to generate CSV template files from the type templates, making it very convenient to change the data structure by changing the type template and calling \textit{python ./structana/main.py -T} to generate a new set of CSV templates.
 
 \begin{inconsolata}

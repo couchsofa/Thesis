@@ -1,10 +1,42 @@
 \section{Assembling Matrices and Vectors}
 \label{sec:asmmatrvec}
 
+
+
 \subsection{Global Member Force Vector $S\textsubscript{G}$}
-\label{sec:asmSG}
+\label{sec:asmSGZ}
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+#adds up the load vectors and adds them to the strut dict
+def assemble_S_L( strutLoads, struts, nodes ):
+	#assemble strut IDs form dict
+	StrutIDs = {}
+	for ID, strut in struts.iteritems():
+		StrutIDs[strut['ID']] = ID
+
+	S_L = {}
+	for ID, load in strutLoads.iteritems():
+		strut = struts[StrutIDs[load['Strut']]]
+		id = StrutIDs[strut['ID']]
+		if id in S_L:
+			S_L[id] += get_S_L(load, strut)
+		else:
+			S_L[id] = get_S_L(load, strut)
+
+	for ID, v in S_L.iteritems():
+		struts[ID]['S_L'] = v
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
 \subsection{System Stiffness Matrix $K$}
 \label{sec:asmK}
+
+
 
 \subsection{Applying Constraints}
 \label{sec:applyconst}
