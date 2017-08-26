@@ -1,3 +1,6 @@
+There are still some features and optimizations that could be implemented to extend functionality, usability and reduce memory usage and CPU time.
+This chapter addresses deflection plot accuracy, matrix data types and dynamic system analysis.
+
 \section{Dynamic Analysis}
 \label{sec:dynAna}
 
@@ -70,6 +73,8 @@ In a first approximation the handle length ($\lvert\overrightarrow{P_0P_1}\lvert
 To increase accuracy even further, a relationship between handle length, stiffness and load could be developed but is not persued in this thesis. 
 
 \section{Sparse Matrix Data Type}
-\label{sec:section3.3}
+\label{sec:sparsematrix}
 
-test3
+In this thesis the \textit{scipy} (\cref{sec:depend}) datatype \textit{ndarray} was used to store the matrices. This tracks all indices but the matrices are symmetric and even the global stiffness matrix $K_G$ (\cref{fullstiffnessmatrix}) only contains non-zero values three columns and rows above and below the diagonal.
+A sparse matrix datatype like \textit{CSR} (Compressed Sparse Row Format) or \textit{COO} (Coordinate list) could be used to optimize for memory usage.
+Or even a custom datatype that tracks only the indices containing non-zero values above the diagonal.
