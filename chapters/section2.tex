@@ -9,7 +9,7 @@ Option parsing is implemented using \textit{Pyhtons} \textit{optparse} (\cref{se
 
 If the CSV files are not located in the program root directory a path can be specified using the following options.
 
-\vspace{2em}
+\vspace{0.5em}
 \begin{addmargin}[2em]{1em}
 -N NODEFILE, --NodeFile=NODEFILE
 
@@ -31,16 +31,16 @@ If the CSV files are not located in the program root directory a path can be spe
 
 \textit{CSV file with node load definitions}
 \end{addmargin}
-\vspace{2em}
+\vspace{0.5em}
 
 To generate templates with the column names from the type templates (\ref{ubsec:inputtemplates.py}) this option can be set and the program will exit after creating the files in the program root directory.
-\vspace{2em}
+\vspace{0.5em}
 \begin{addmargin}[2em]{1em}
 -T 
 
 \textit{Generate csv input template files}
 \end{addmargin}
-\vspace{2em}
+\vspace{0.5em}
 
 
 \begin{inconsolata}
@@ -275,6 +275,8 @@ nodeLoadTypeTemplate    = [ ('Node' , str),
 \end{minipage}
 \end{inconsolata}
 
+\pagebreak
+
 \subsection{CSV Parser}
 \label{sec:csvparse}
 
@@ -391,6 +393,8 @@ def deleteFreeNodes(nodes, struts):
 
 Then some logical checks are performed.
 
+\pagebreak
+
 \subsubsection{Strut Node References}
 \label{sec:inputcheck-checkStrutNodes}
 
@@ -441,6 +445,8 @@ def checkConstraintNodes(nodes, constraints):
 \end{lstlisting}
 \end{minipage}
 \end{inconsolata}
+
+\pagebreak
 
 \subsubsection{Strut Load References}
 \label{sec:inputcheck-checkStrutLoads}

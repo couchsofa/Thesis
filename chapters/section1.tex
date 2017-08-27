@@ -222,6 +222,8 @@ Now that the analysis is complete the output can be written to a CSV file and a 
 The utility module contains small helper functions used in all other modules.
 These mostly deal with traversing Python's data structures relating names and ids of strut and node objects but also formatting matrices and object properties for debugging output.
 
+\pagebreak
+
 \subsection{input\_templates.py}
 \label{subsec:inputtemplates.py}
 
@@ -278,6 +280,8 @@ def strutType(strut):...
 
 The functions of the \textit{output} module are used to convert and store the results of the analysis in CSV files.
 
+\pagebreak
+
 \subsection{solver.py}
 \label{subsec:solver.py}
 
@@ -313,6 +317,8 @@ def solver(K, S_G, constraints, nodes):
 \end{lstlisting}
 \end{minipage}
 \end{inconsolata}
+
+\pagebreak
 
 \subsection{load\_vectors.py}
 \label{subsec:loadvectors.py}
@@ -554,20 +560,6 @@ In first order theory ($N = 0 \Rightarrow \varepsilon = 0$) they are treated as 
     d = a + b
 \end{equation}
 
-\begin{figure}[h]%
-    \centering
-    \includegraphics[width=0.9\textwidth]{coeff_N_neg.png}%
-    \caption{Coefficients for negative normal pressure}%
-    \label{fig:coeff_N_neg}%
-\end{figure}
-
-\begin{figure}[h]%
-    \centering
-    \includegraphics[width=0.9\textwidth]{coeff_N_pos.png}%
-    \caption{Coefficients for positive normal pressure}%
-    \label{fig:coeff_N_pos}%
-\end{figure}
-
 Because all matrices are symmetric the lower left is left empty (initiated with $0$). All matrix operations are only applied to the upper right parts to save time.
 Only the \textit{solver} (\cref{subsec:solver.py}) requires that the entries are mirrored to the lower left. Therefore, when the system stiffness matrix $K$ is assembled it gets symmetrized before calling the \textit{solver} by adding the transposed matrix to itself and subtracting the diagonal.
 This assumes that the lower left contains only zeroes.
@@ -588,6 +580,21 @@ def symmetrize(M):
 \end{minipage}
 \end{inconsolata}
 
+\begin{figure}[h!]%
+    \centering
+    \includegraphics[width=0.9\textwidth]{coeff_N_neg.png}%
+    \caption{Coefficients for negative normal pressure}%
+    \label{fig:coeff_N_neg}%
+\end{figure}
+
+\begin{figure}[h!]%
+    \centering
+    \includegraphics[width=0.9\textwidth]{coeff_N_pos.png}%
+    \caption{Coefficients for positive normal pressure}%
+    \label{fig:coeff_N_pos}%
+\end{figure}
+
+\pagebreak
 
 \subsection{graphics.py}
 \label{subsec:graphics.py}
