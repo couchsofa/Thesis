@@ -6,11 +6,11 @@ The modules listed below are used in this implementation.
 \bigskip
  
 \textit{optparse} [\url{https://docs.python.org/2/library/optparse.html}] \linebreak
-The Python option parser \textit{optparse} is used to parse and set defaults for command-line options.
+The Python option parser \textit{optparse} is used to parse and set defaults for commandline options.
 \bigskip
 
 \textit{scipy} [\url{https://www.scipy.org/}]\linebreak
-\textit{Scipy} is a widely used Python package for scientific computation. The linear algebra sub-module \textit{linalg} is used in particular to implement the solver (\cref{sec:solver}) routine that solves the system of linear equations describing the system.
+\textit{Scipy} is a widely used Python package for scientific computation. The linear algebra submodule \textit{linalg} is used in particular to implement the solver (\cref{sec:solver}) routine that solves the system of linear equations descirbing the system.
 \bigskip
 
 \textit{numpy} [\url{https://www.numpy.org/}]\linebreak
@@ -35,7 +35,7 @@ The program is split into multiple modules containing different functions descri
 \subsection{main.py}
 \label{subsec:main.py}
 
-The main module calls the functions from the different modules and first performs the option parsing.
+The main module calls the functions from the different modules and first perfoms the option parsing.
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -149,7 +149,7 @@ The system stiffness matrix $K$ is then assembled from the stiffness matrices $K
 Now checks can be performed if the system is kinematic. The two criteria used here are:
 \begin{itemize}
 
-  \item Under-defined system (not enough constraints)
+  \item Underdefined system (not enough constraints)
 
 \begin{equation}
 n < 3
@@ -287,7 +287,7 @@ The \textit{solver} module implements the routine to solve the system of linear 
 S\textsubscript{G} = K \cdot d
 \end{equation}
 
-After computing the solution the constraints are applied to the resulting vector $d$.
+After computing the solution the constraints are apllied to the resulting vector $d$.
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -523,7 +523,7 @@ The member coeffecient $\varepsilon$ is dependent on the strut length $l$, the n
 \varepsilon = l \cdot \sqrt{\frac{|N|}{EI}}
 \end{equation}
 
-The coefficients $a, b, c ,d$ are functions in second order theory and model stiffening and weakening due to normal force.
+The coeffecients $a, b, c ,d$ are functions in second order theory and model stiffening and weakening due to normal force.
 In first order theory ($N = 0 \Rightarrow \varepsilon = 0$) they are treated as constants.
 \note{reference coefficients}
 \begin{equation} \label{a}
@@ -592,7 +592,7 @@ def symmetrize(M):
 \subsection{graphics.py}
 \label{subsec:graphics.py}
 
-The \textit{graphics} module is used to visualize the system geometry, load vectors, stress resultants and to generate an approximated deflection plot.
+The \textit{graphics} module is used to visualize the system geomatry, load vectors, stress resultants and to generate an approximated deflection plot.
 The plots can be displayed directly and execution is blocked or saved to a .png or .pdf file.
 
 \note{Update when drawSystem shows resultants}

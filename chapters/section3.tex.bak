@@ -288,7 +288,7 @@ With $n$ being the number of nodes:
 \section{Calculate Member Forces}
 \label{sec:calcmemberforces}
 
-After obtaining the solution the local member forces can be calculated by solving $S_l = K_n \cdot d$ where $K_n$ is the member stiffness matrix and $d$ the deflection vector with the components corresponding to the respective member.
+After obtaining the solution the local member forces can be calculated by solving $S_l = K_n \cdot d$ where $K_n$ is the member stiffness matrix and $d$ the deflection vector with the components corresponding to the respective meber.
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}

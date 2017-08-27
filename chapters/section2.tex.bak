@@ -305,7 +305,7 @@ def readCSV(csvFile, typeTemplate):
 \end{minipage}
 \end{inconsolata}
 
-Then it tries to cast each entry from type \textit{string} to the type specified in the template.
+Then it trys to cast each entry from type \textit{string} to the type specified in the template.
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -342,7 +342,7 @@ def typeConv(_dict, _typeTemplate):
 \end{minipage}
 \end{inconsolata}
 
-This method uses \textit{Pythons} casting methods, which are very sensible and reliable \cite[2.4.1-2.4.6]{pythonTypes}.
+This method uses \textit{Pythons} casting methods, which are very sensible and relyable \cite[2.4.1-2.4.6]{pythonTypes}.
 The \textit{input.py} (\cref{subsec:input.py}) also contains a function to generate CSV template files from the type templates, making it very convenient to change the data structure by changing the type template and calling \textit{python ./structana/main.py -T} to generate a new set of CSV templates.
 
 \begin{inconsolata}

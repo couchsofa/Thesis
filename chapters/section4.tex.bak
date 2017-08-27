@@ -31,7 +31,7 @@ A dynamic system analysis could be performed using member mass matrices $m$
     \end{bmatrix}
 \end{equation}
 
-to assemble a global mass matrix $M$, obtain the eigenvalues
+to assamble a global mass matrix $M$, obtain the eigenvalues
 
 \begin{equation*} \label{eigenvalues2}
 det \lvert K - \lambda_n \cdot M \lvert = 0 
@@ -53,13 +53,13 @@ However, a third approach was chosen here: approximation using cubic B\'{e}zier 
 \subsection{P-Order Increase}
 \label{subsec:porder}
 
-Increasing the P-order by using a higher order polynomial would require solving the underlying differential equation for every load type.
+Increasing the P-order by using a higher order polynomial would require solving the underlying diffenential equation for every load type.
 This wouldn't scale very well because load types would have to provide a suitable polynomial. Which would make it more complicated to add further load types. 
 
 \subsection{N-Order Increase}
 \label{subsec:norder}
 
-The N-order increase is the most common method and used by almost every commercial software. It only requires a method to subdivide elements.
+The N-order increase is the most common method and used by almost every commercial software. It only requires a method to subdevide elements.
 This lets the stiffness matrix grow very fast. But with the computing power and memory of current desktop PCs it only becomes an issue for very large systems.
 
 \subsection{B\'{e}zier Curves}
@@ -102,7 +102,7 @@ P_3(y) &= node_{n+1}(y) + d_{n+1}^y \\
 \end{equation*}
 
 In a first approximation the handle length ($\lvert\overrightarrow{P_0P_1}\lvert , \lvert\overrightarrow{P_3P_2}\lvert$) is set to one half of the strut length. This already turns out to produce qualitatively good results.
-To increase accuracy even further, a relationship between handle length, stiffness and load could be developed but is not pursued in this thesis. 
+To increase accuracy even further, a relationship between handle length, stiffness and load could be developed but is not persued in this thesis. 
 
 \section{Sparse Matrix Data Type}
 \label{sec:sparsematrix}
