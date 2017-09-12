@@ -478,7 +478,6 @@ def assemble_S_G( nodeLoads, struts, nodes ):
 \label{subsec:matrices.py}
 
 \textit{matrices} is used to deal with the required matrix operations and to calculate the matrices of the different member types (\cref{fig:memberTypes}).
-\note{reference matrices}
 \begin{equation} \label{K1}
 K\textsubscript{1} = \begin{pmatrix}
 \dfrac{EA}{l} & 0                   & 0                   & -\dfrac{EA}{l}  & 0                   & 0                   \\[0.8em]
@@ -523,6 +522,19 @@ K\textsubscript{3} = \begin{pmatrix}
      \end{pmatrix}
 \end{equation}
 
+\begin{equation} \label{Kgeom}
+K\textsubscript{geom} = \begin{pmatrix}
+            0 & 0                            & 0                   & 0               & 0                            & 0                   \\[0.8em]
+              & \pm\dfrac{\lvert N\lvert}{l} & 0                   & 0               & \mp\dfrac{\lvert N\lvert}{l} & 0                   \\[0.8em]
+              &                              & 0                   & 0               & 0                            & 0                   \\[0.8em]
+              &                              &                     & 0               & 0                            & 0                   \\[0.8em]
+              &                              &                     &                 & \pm\dfrac{\lvert N\lvert}{l} & 0                   \\[0.8em]
+              &                              &                     &                 &                              & 0
+     \end{pmatrix}
+\end{equation}
+
+With upper signs for tension and lower signs for pressure.
+
 The member coeffecient $\varepsilon$ is dependent on the strut length $l$, the normal force $N$ and its flexural rigidity $EI$:
 
 \begin{equation} \label{e}
@@ -531,7 +543,9 @@ The member coeffecient $\varepsilon$ is dependent on the strut length $l$, the n
 
 The coefficients $a, b, c ,d$ are functions in second order theory and model stiffening and weakening due to normal force.
 In first order theory ($N = 0 \Rightarrow \varepsilon = 0$) they are treated as constants.
-\note{reference coefficients}
+
+\pagebreak
+
 \begin{equation} \label{a}
     a = \begin{cases}
             \hfil 4              & \text{if } \varepsilon \leq 0\\[1.2em]
@@ -602,7 +616,6 @@ def symmetrize(M):
 The \textit{graphics} module is used to visualize the system geometry, load vectors, stress resultants and to generate an approximated deflection plot.
 The plots can be displayed directly and execution is blocked or saved to a .png or .pdf file.
 
-\note{Update when drawSystem shows resultants}
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=python]

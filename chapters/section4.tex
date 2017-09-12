@@ -7,13 +7,13 @@ This chapter addresses deflection plot accuracy, matrix data types, and dynamic 
 When the system contains non-trivial solutions a stability analysis could be performed to obtain the buckled shape by finding the eigenvalues
 
 \begin{equation*} \label{eigenvalues}
-det \lvert K \cdot \lambda_n \lvert = 0 
+det \lvert K + K_{geom} \cdot \lambda_n \lvert = 0 
 \end{equation*}
 
 and constructing the buckled shapes from $d$
 
 \begin{equation*} \label{buckle}
-K \cdot \lambda_n \cdot d = 0
+( K + K_{geom} \cdot \lambda_n ) \cdot d = 0
 \end{equation*}
 
 \section{Dynamic Analysis}
@@ -22,12 +22,12 @@ K \cdot \lambda_n \cdot d = 0
 A dynamic system analysis could be performed using member mass matrices $m$ 
 \begin{equation} \label{strut3}
     m = \begin{bmatrix}
-        \frac{m}{2}  & 0		   & 0 & 0 & 0           & 0 \\
+                   0 & 0		   & 0 & 0 & 0           & 0 \\
                      & \frac{m}{2} & 0 & 0 & 0           & 0 \\
                      &             & 0 & 0 & 0           & 0 \\
                      &             &   & 0 & 0           & 0 \\
                      &             &   &   & \frac{m}{2} & 0 \\
-        Sym.         &             &   &   &             & \frac{m}{2}
+        Sym.         &             &   &   &             & 0
     \end{bmatrix}
 \end{equation}
 
