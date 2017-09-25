@@ -133,20 +133,8 @@ The global force vector $S\textsubscript{G}$ is then calculated from node loads 
 \end{minipage}
 \end{inconsolata}
 
-The system stiffness matrix $K$ is then assembled from the stiffness matrices $K\textsubscript{i}$ of the the individual struts and constraints are applied.
-
-\begin{inconsolata}
-\begin{minipage}{\linewidth}
-\begin{lstlisting}[language=python]
-...
-    K = assemble_global_K_I(nodes, struts)
-    apply_constraints(K, struts, nodes, constraints)
-...
-\end{lstlisting}
-\end{minipage}
-\end{inconsolata}
-
-Now checks can be performed if the system is kinematic. The two criteria used here are:
+Now the solver can be called to calculate the displacement vector $d$.
+It performs checks if the system is kinematic. The two criteria used here are:
 \begin{itemize}
 
   \item Under-defined system (not enough constraints)
@@ -179,14 +167,13 @@ det \lvert K \lvert = 0
 \end{minipage}
 \end{inconsolata}
 
-If these checks are passed the solver can be called to calculate the displacement vector $d$.
 After obtaining $d$ the resulting local member forces $S\textsubscript{L}$ can be calculated and stored in the corresponding strut objects.
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=python]
 ...
-    d = solver(K, S_G, constraints, nodes)
+    d = solver(S_G, constraints, nodes, struts, options.epsilon, options.secondOrder, options.debug, options.iterBound)
     calc_local_forces(nodes, struts, d)
 ...
 \end{lstlisting}
@@ -291,13 +278,41 @@ The \textit{solver} module implements the routine to solve the system of linear 
 S\textsubscript{G} = K \cdot d
 \end{equation}
 
+First the normal force in all members is assumed to be $0$ for first order and the first iteration of second order calculation.
+Then the global stiffness matrix is constructed, constraints applied and the matrix symmetrized.
+The constraints are also applied to stiffness matrices of the members and the solver is called.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+def solver(S_G, constraints, nodes, struts, epsilon, secondOrder, debug, interBound):
+
+    #first iteration with N=0
+    for ID, strut in struts.iteritems():
+        strut["N"] = 0
+
+    K = assemble_global_K_I(nodes, struts)
+    apply_constraints(K, struts, nodes, constraints)
+    K = symmetrize(K)
+
+    # update strut K
+    applyConstToStrutK(struts, constraints)
+
+    d = solveLinear(K, S_G, constraints, nodes)
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
+\pagebreak
+
 After computing the solution the constraints are applied to the resulting vector $d$.
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language=python]
 ...
-def solver(K, S_G, constraints, nodes):
+def solver_linear(K, S_G, constraints, nodes):
     d = sp.solve(K,S_G)
 
     #apply constraints: set d[i] = 0
@@ -314,6 +329,77 @@ def solver(K, S_G, constraints, nodes):
             d[x] = 0
 
     return d
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
+If a second order analysis is to be performed the normal forces are calculated from the solution and this is considered to be the first step in iteration and the solver enters a loop.
+The solver then loops through a set of operations:
+
+\begin{itemize}
+\item Save the normal forces calculated in the previous step.
+\item Assemble the system stiffness matrix and add the geometric parts.
+\item Apply the constraints and symmetrize.
+\item Solve the system and calculate the new normal pressures from the solution.
+\item Find the largest difference in normal pressure between the current and previous result.
+\end{itemize}
+
+If the difference is below the threshold ($Epsilon$) or the number if iterations has passed the upper bound the loop is exited.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+    while True:
+
+        #save the last result
+        lastN = {}
+        for ID, strut in struts.iteritems():
+            lastN[ID] = strut["N"]
+
+        K = assemble_global_K_I(nodes, struts)
+        Kgeom = calculateKgeom(struts, nodes)
+        K += Kgeom
+
+        apply_constraints(K, struts, nodes, constraints)
+        K = symmetrize(K)
+        d = solveLinear(K, S_G, constraints, nodes)
+
+        # update strut K
+        for ID, strut in struts.iteritems():
+            N = strut["N"]
+            l = strut["l"]
+
+            strut['K'] += Kgeom_(N,l)
+
+        applyConstToStrutK(struts, constraints)
+
+        #calculate new result
+        calculateN(nodes, struts, d)
+
+        #calculate largest delta
+        newN = {}
+        for ID, strut in struts.iteritems():
+            newN[ID] = strut["N"]
+
+        delta = []
+        for ID, N in lastN.iteritems():
+            delta.append(abs(N - newN[ID]))
+        delta = max(delta)
+
+        print "Iteration " + str(i) + ": delta = " + str(delta)
+        i += 1
+
+        if delta <= epsilon:
+            break
+
+        if i >= interBound:
+            print('System is unstable (delta N not converging after ' + str(i) + ' iterations)!')
+            exit()
+
+return d
+...
 \end{lstlisting}
 \end{minipage}
 \end{inconsolata}
@@ -378,7 +464,7 @@ def S_L_3_3( x1, x2, l, F, M, q ):...
 \end{minipage}
 \end{inconsolata}
 
-The function references are stored in a \textit{dictionary} and dereferenced by member and load type as keys to simplify the implementation of the \textit{get\_S\_L} function and allow for easy expandability.
+The function references are stored in a \textit{dictionary} and dereferenced by member and load type as keys to simplify the implementation of the \textit{get\_S\_L} function and allow for easy expand-ability.
 
 \begin{inconsolata}
 \begin{minipage}{\linewidth}
@@ -535,7 +621,7 @@ K\textsubscript{geom} = \begin{pmatrix}
 
 With upper signs for tension and lower signs for pressure.
 
-The member coeffecient $\varepsilon$ is dependent on the strut length $l$, the normal force $N$ and its flexural rigidity $EI$:
+The member coefficient $\varepsilon$ is dependent on the strut length $l$, the normal force $N$ and its flexural rigidity $EI$:
 
 \begin{equation} \label{e}
 \varepsilon = l \cdot \sqrt{\frac{|N|}{EI}}
@@ -543,6 +629,25 @@ The member coeffecient $\varepsilon$ is dependent on the strut length $l$, the n
 
 The coefficients $a, b, c ,d$ are functions in second order theory and model stiffening and weakening due to normal force.
 In first order theory ($N = 0 \Rightarrow \varepsilon = 0$) they are treated as constants.
+
+If the member coefficient exceeds $\epsilon = 2 \cdot \pi$ a warning is printed and the program exits.
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+def _e( E, I, l, N ):
+    e = l*math.sqrt(float(abs(N))/float(E*I))
+    if e >= np.pi * 2:
+        print('System is unstable (e = ' + str(e) + ' >= 2*pi)!')
+        exit()
+    return e
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
+The coefficients $a$ and $b$ are bounded at $\epsilon = 1.431 \cdot \pi$ and $\epsilon = \pi$ for normal pressure respectively.
 
 \pagebreak
 

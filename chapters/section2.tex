@@ -229,6 +229,79 @@ When the debug flag is set all element stiffness matrices and the global stiffne
 \end{minipage}
 \end{inconsolata}
 
+\subsection{Solver}
+\label{subsec:solver}
+
+The solver options allow it to specify which type of analysis is to be performed (first or second order theory) and threshold for the iteration can be set. 
+
+At each iteration the delta in normal force is calculated. Iteration stops if this delta is below the threshold \textit{Epsilon}.
+
+\vspace{2em}
+\begin{addmargin}[2em]{1em}
+-e, --Epsilon
+
+\textit{Threshold at which to stop iteration}
+\end{addmargin}
+\vspace{2em}
+
+This option enables the second order analysis.
+
+\vspace{2em}
+\begin{addmargin}[2em]{1em}
+-2, --SecondOrder
+
+\textit{Perform iterative second order analysis}
+\end{addmargin}
+\vspace{2em}
+
+If the difference in deltas between iterations does not converge, the program iteration stops after an upper bound and prints an error message.
+
+\vspace{2em}
+\begin{addmargin}[2em]{1em}
+-B, --iterBound
+
+\textit{Number of iterations before giving up}
+\end{addmargin}
+\vspace{2em}
+
+\begin{inconsolata}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+...
+################################################################
+#       solver                                                 #
+################################################################
+
+    group = OptionGroup(parser, "Solver options")
+
+    group.add_option("-e", "--Epsilon",
+                                        type="float",
+                                        action="store",
+                                        dest="epsilon",
+                                        default=10.0,
+                                        help="Threshold at which to stop iteration")
+
+    group.add_option("-2", "--SecondOrder",
+                                        action="store_true",
+                                        dest="secondOrder",
+                                        help="Perform iterative second order analysis")
+
+    group.add_option("-B", "--iterBound",
+                                        type="int",
+                                        action="store",
+                                        dest="iterBound",
+                                        default=1000,
+                                        help="Number of iterations before giving up")
+
+    parser.add_option_group(group)
+
+################################################################
+...
+\end{lstlisting}
+\end{minipage}
+\end{inconsolata}
+
+\pagebreak
 
 \section{Input Parsing}
 \label{sec:inputpars}
